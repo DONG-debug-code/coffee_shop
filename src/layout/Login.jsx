@@ -2,16 +2,29 @@ import { doc, getDoc } from 'firebase/firestore';
 import React, { useState } from 'react'
 import { auth, dulieu } from '../data/connectdata';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { user, loading } = useAuth();
+
+    // Nếu đã đăng nhập rồi → redirect thẳng, không cần vào trang login
+    if (loading) return null; // chờ Firebase restore session
+    if (user) {
+        if (user.role === "admin") return <Navigate to="/admin" replace />;
+        if (user.role === "staff") return <Navigate to="/pos" replace />;
+    }
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError("");
+        setIsLoading(true);
         try {
             const res = await signInWithEmailAndPassword(auth, email, password); //đăng nhập với firebase auth
             const uid = res.user.uid; //lấy uid của user vừa đăng nhập
@@ -27,15 +40,18 @@ const Login = () => {
             const data = snap.data(); //lấy data từ document
 
             if (data.status !== true) { //kiểm tra trạng thái tài khoản
-                alert("Tài khoản bị khóa!");
+                setError("Tài khoản bị khóa!");
+                await auth.signOut(); //đăng xuất nếu tài khoản bị khóa
                 return;
             }
 
+            // AuthContext's onAuthStateChanged sẽ tự cập nhật user
+            // → ProtectedRoute / redirect ở trên sẽ xử lý điều hướng
             if (data.role === "admin") navigate("/admin"); //điều hướng theo role
             else if (data.role === "staff") navigate("/pos"); //điều hướng theo role
-            else alert("Role k hợp lệ");
+            else setError("Role k hợp lệ");
         } catch (err) { //nếu có lỗi trong quá trình đăng nhập
-            alert("Bạn nhập sai email hoặc mật khẩu!");
+            setError("Bạn nhập sai email hoặc mật khẩu!");
         }
     }
 

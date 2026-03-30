@@ -5,30 +5,49 @@ import { POSLayout } from './layout/POSLayout'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './layout/Login';
 import { AdminRoute, StaffRoute } from './components/ProtectedRoute';
+import { Dashboard } from './page/admin/Dashboard';
+import { Staff } from './page/admin/Staff';
+import { User } from './page/admin/User';
+import { Menu } from './page/admin/Menu';
+import { Order } from './page/admin/Order';
+import { Table } from './page/admin/Table';
+import { Report } from './page/admin/Report';
+import { AuthProvider } from './context/AuthContext';
 
 
 function App() {
-  
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/login' element={<Login/>}/>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/login' element={<Login />} />
 
-        <Route path='admin/*' element={
-          <AdminRoute>
-            <AdminLayout/>
-          </AdminRoute>
-        }/>
+          <Route path='admin/*' element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }>
+            <Route index element={<Dashboard />} />
+            <Route path='staff' element={<Staff />} />
+            <Route path='user' element={<User />} />
+            <Route path='menu' element={<Menu />} />
+            <Route path='order' element={<Order />} />
+            <Route path='table' element={<Table />} />
+            <Route path='report' element={<Report />} />
+          </Route>
 
-        <Route path='/pos/*' element={
-          <StaffRoute>
-            <POSLayout/>
-          </StaffRoute>
-        }/>
+          <Route path='/pos/*' element={
+            <StaffRoute>
+              <POSLayout />
+            </StaffRoute>
+          } />
 
-        <Route path='/' element={<Navigate to='/login' replace/>}/>
-      </Routes>
-    </BrowserRouter>
+          <Route path='/' element={<Navigate to='/login' replace />} />
+        </Routes>
+
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 
