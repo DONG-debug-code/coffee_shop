@@ -1,23 +1,52 @@
-### vấn đề cần làm
-# Đang nhập
-1. Trang đăng nhập
-2. phân trang POS/Admin theo tài khoản user khi đăng nhập
+### Coffee Shop Management System
+# Hệ thống quản lý quán cafe gồm Admin Dashboard + POS bán hàng xây dựng bằng ReactJS.
 
-# Đăng xuất
+## Giới thiệu
 
-# category
-1. xóa (Ngăn k xóa được nếu trong menu có sản phẩm mang id danh mục đó)
-2. Nếu trạng thái hết thì menu sẽ k hiển thị sản phẩm
+# Đây là web app mô phỏng phần mềm quản lý quán cafe thực tế:
+ - Quản lý nhân viên
+ - Quản lý menu
+ - Quản lý đơn hàng
+ - POS bán hàng tại quầy
 
+## Tính năng chính
+# Admin Dashboard
+* Quản trị toàn bộ hệ thống:
+ - Dashboard thống kê
+ - Quản lý nhân viên
+ - Quản lý user
+ - Quản lý menu
+ - Quản lý đơn hàng
+ - Quản lý bàn
+ - Báo cáo doanh thu
+* Sidebar navigation + Admin layout riêng.
 
-# quản lý bàn 
-# quản lý đơn hàng
+# POS (Point of Sale)
+* Dành cho nhân viên bán hàng:
+ - Giao diện POS riêng
+ - Phân quyền Staff
+ - Luồng bán hàng tại quầy
+# Authentication & Authorization
+ - Login hệ thống
+ - Context API quản lý auth
+ - ProtectedRoute:
+   + AdminRoute
+   + StaffRoute
 
-# POS
-1. order
-2. thanh toán (tiền mặt/chuyển khoản, tạo mã QR)
-
-# Dashboard
-# Thống kê (Doanh thu)
-# Quản lý nhân viên (Lương, Chấm công nhân viên)
-# Responsive (tablet, mobile)
+# Công nghệ sử dụng
+ - React (Vite)
+ - React Router DOM
+ - Context API
+ - TailwindCSS
+ - React Icons
+# Điểm mạnh kỹ thuật
+ - Role-based routing
+ - Tách layout theo role (Admin / Staff)
+ - Dashboard structure chuẩn SaaS
+ - Sidebar navigation chuyên nghiệp
+ - Kiến trúc dễ mở rộng backend
+# Cài đặt
+ - git clone https://github.com/DONG-debug-code/coffee_shop.git
+ - cd coffee_shop
+ - npm install
+ - npm run dev
