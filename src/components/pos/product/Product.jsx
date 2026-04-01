@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { SearchProduct } from '../../components/pos/product/SearchProduct'
-import { ProductItem } from '../../components/pos/product/ProductItem'
-import { Category } from '../../components/pos/product/Category'
-import { useRealtimeCollection } from '../../data/useCollection'
+import { SearchProduct } from './SearchProduct'
+import { ProductItem } from './ProductItem'
+import { Category } from './Category'
+import { useRealtimeCollection } from '../../../data/useCollection'
+import { ProductOptionModal } from './ProductOptionModal'
 
 
 export const Product = () => {
@@ -13,6 +14,7 @@ export const Product = () => {
     const [keyword, setKeyword] = useState("");
     //state danh mục được chọn
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
 
     const filteredProduct = products?.filter(item => { //kiểm tra từng sản phẩm
@@ -41,9 +43,19 @@ export const Product = () => {
             </div>
             <div className="flex-1 overflow-y-auto p-4">
                 <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    <ProductItem tim={filteredProduct} />
+                    <ProductItem 
+                        tim={filteredProduct} 
+                        onSelect={setSelectedProduct} />
                 </div>
             </div>
+
+            {/* Modal sản phẩm */}
+            {selectedProduct && (
+                <ProductOptionModal
+                    product={selectedProduct}
+                    onClose={() => setSelectedProduct(null)}  // ← thêm
+                />
+            )}
         </div>
     )
 }

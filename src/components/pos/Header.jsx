@@ -1,7 +1,6 @@
 import { signOut } from 'firebase/auth';
-import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { auth, dulieu } from '../../data/connectdata'
+import { auth } from '../../data/connectdata'
 import { useAuth } from '../../context/AuthContext';
 
 export const Header = () => {
