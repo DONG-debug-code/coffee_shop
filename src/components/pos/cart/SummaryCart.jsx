@@ -1,18 +1,30 @@
 import React, { useState } from 'react'
 import { useCart } from '../../../context/CartContext'
+import { CheckoutModal } from '../payment/CheckoutModal'
+import { OrderSuccessModal } from '../payment/OrderSuccessModal'
 
 const fmt = (n) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)
 
+// Component hiển thị phần tóm tắt giỏ hàng, bao gồm tổng tiền, mã giảm giá, giảm giá thủ công, thuế, và nút thanh toán. 
+// Cho phép xoá tất cả, áp dụng mã giảm giá, và nhập giảm giá thủ công. Khi nhấn thanh toán sẽ mở modal CheckoutModal, và sau khi thanh toán thành công sẽ hiển thị OrderSuccessModal.
 export const SummaryCart = () => {
-    const {
+    const { // Lấy các thông tin cần thiết từ context giỏ hàng
         cartItems,
-        subtotal, tax, total, TAX_RATE,
+        subtotal, total, TAX_RATE,
         coupon, couponError, applyCoupon, removeCoupon, couponDiscount,
         manualDiscount, setManualDiscount, manualDiscountAmount, clearCart,
     } = useCart()
 
     const [couponInput, setCouponInput] = useState("")
 
+    const [showCheckout, setShowCheckout] = useState(false)      
+    const [completedOrder, setCompletedOrder] = useState(null)   
+
+    // Hàm xử lý khi đơn hàng được thanh toán thành công, sẽ đóng modal thanh toán và mở modal hiển thị đơn hàng đã hoàn thành
+    const handleSuccess = (order) => {                          
+        setShowCheckout(false)
+        setCompletedOrder(order)
+    }
 
     return (
         <div className="px-4 py-4 border-t border-gray-300 bg-gray-50 flex-shrink-0">
@@ -28,7 +40,7 @@ export const SummaryCart = () => {
             <div className="mb-3">
                 {coupon ? (
                     <div className="flex items-center justify-between bg-green-50 border border-green-300 rounded-lg px-3 py-2 text-sm">
-                        <span className="text-green-700 font-medium">✅ {coupon.code}</span>
+                        <span className="text-green-700 font-medium">{coupon.code}</span>
                         <button onClick={removeCoupon} className="text-red-400 hover:text-red-600">Xoá</button>
                     </div>
                 ) : (
@@ -42,7 +54,7 @@ export const SummaryCart = () => {
                         />
                         <button
                             onClick={() => applyCoupon(couponInput)}
-                            className="px-3 py-2 bg-amber-500 text-white rounded-lg text-sm hover:bg-amber-600"
+                            className="px-3 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600"
                         >
                             Áp dụng
                         </button>
@@ -104,15 +116,29 @@ export const SummaryCart = () => {
             {/* Tổng */}
             <div className="flex justify-between items-center mb-2">
                 <span className="text-xl font-bold text-gray-800">Tổng cộng:</span>
-                <span className="text-2xl font-bold text-green-600">{fmt(total)}</span>
+                <span className="text-2xl font-bold text-blue-600">{fmt(total)}</span>
             </div>
 
             {/* Thanh toán */}
             <button
+                onClick={() => setShowCheckout(true)}
                 disabled={cartItems.length === 0}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-bold text-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-lg">
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-bold text-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-lg">
                 Thanh toán
             </button>
+
+            {showCheckout && (
+                <CheckoutModal
+                    onClose={() => setShowCheckout(false)}
+                    onSuccess={handleSuccess}
+                />
+            )}
+            {completedOrder && (
+                <OrderSuccessModal
+                    order={completedOrder}
+                    onClose={() => setCompletedOrder(null)}
+                />
+            )}
         </div>
     )
 }

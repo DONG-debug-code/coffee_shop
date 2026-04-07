@@ -13,7 +13,7 @@ export const Cart = () => {
                 <h2 className="text-xl font-bold flex items-center">
                     Giỏ hàng
                     {cartItems.length > 0 && (
-                        <span className="ml-2 bg-amber-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                        <span className="ml-2 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
                             {cartItems.length}
                         </span>
                     )}

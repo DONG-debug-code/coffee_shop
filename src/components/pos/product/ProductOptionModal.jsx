@@ -18,12 +18,19 @@ const fmt = (n) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency:
 
 export const ProductOptionModal = ({ product, onClose }) => {
     const { addToCart } = useCart();
-    const [size, setSize] = useState(SIZES[1]); // mặc định M
+    const category = product.categoryId?.toLowerCase(); // Chuẩn hoá category để dễ so sánh, tránh lỗi do viết hoa/thường. Nếu categoryId không tồn tại, coi như không có tuỳ chọn nào (size/topping) được áp dụng.
+
+    // Quy tắc hiển thị theo category
+    const hasSize = category === "tea" || category === "milktea";
+    const hasTopping = category === "milktea";
+
+    const [size, setSize] = useState(hasSize ? SIZES[1] : null);
     const [selectedToppings, setSelectedToppings] = useState([]);
     const [quantity, setQuantity] = useState(1);
     const [note, setNote] = useState("");
 
-    const toggleTopping = (topping) => {
+    // Hàm toggle cho việc chọn/bỏ chọn topping
+    const toggleTopping = (topping) => { 
         setSelectedToppings(prev =>
             prev.find(t => t.id === topping.id)
                 ? prev.filter(t => t.id !== topping.id)
@@ -32,12 +39,14 @@ export const ProductOptionModal = ({ product, onClose }) => {
     };
 
     const toppingTotal = selectedToppings.reduce((sum, t) => sum + t.price, 0);
-    const unitPrice = Number(product.price) + size.extra + toppingTotal;
+    const sizeExtra = size?.extra ?? 0;
+    const unitPrice = Number(product.price) + sizeExtra + toppingTotal;
     const total = unitPrice * quantity;
 
+    // Hàm xử lý khi người dùng nhấn "Thêm vào giỏ"
     const handleAdd = () => {
         addToCart(product, {
-            size: size.label,
+            size: size?.label ?? null,
             toppings: selectedToppings,
             quantity,
             note,
@@ -48,11 +57,11 @@ export const ProductOptionModal = ({ product, onClose }) => {
     return (
         <div
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-            onClick={onClose}  // click ngoài để đóng
+            onClick={onClose}
         >
             <div
                 className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl"
-                onClick={e => e.stopPropagation()}  // không đóng khi click trong modal
+                onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
                 <div className="flex gap-4 mb-5">
@@ -67,52 +76,56 @@ export const ProductOptionModal = ({ product, onClose }) => {
                     </div>
                 </div>
 
-                {/* Size */}
-                <div className="mb-4">
-                    <p className="font-semibold text-gray-700 mb-2">Size</p>
-                    <div className="flex gap-2">
-                        {SIZES.map(s => (
-                            <button
-                                key={s.label}
-                                onClick={() => setSize(s)}
-                                className={`flex-1 py-2 rounded-lg border font-medium text-sm transition
-                                    ${size.label === s.label
-                                        ? "bg-amber-500 text-white border-amber-500"
-                                        : "border-gray-300 text-gray-600 hover:border-amber-400"
-                                    }`}
-                            >
-                                {s.label}
-                                {s.extra > 0 && (
-                                    <span className="text-xs block opacity-75">+{fmt(s.extra)}</span>
-                                )}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Topping */}
-                <div className="mb-4">
-                    <p className="font-semibold text-gray-700 mb-2">Topping</p>
-                    <div className="grid grid-cols-2 gap-2">
-                        {TOPPINGS.map(t => {
-                            const selected = selectedToppings.find(x => x.id === t.id);
-                            return (
+                {/* Size — chỉ tea và milktea */}
+                {hasSize && (
+                    <div className="mb-4">
+                        <p className="font-semibold text-gray-700 mb-2">Size</p>
+                        <div className="flex gap-2">
+                            {SIZES.map(s => (
                                 <button
-                                    key={t.id}
-                                    onClick={() => toggleTopping(t)}
-                                    className={`flex justify-between px-3 py-2 rounded-lg border text-sm transition
-                                        ${selected
-                                            ? "bg-amber-50 border-amber-500 text-amber-700"
-                                            : "border-gray-200 text-gray-600 hover:border-amber-300"
+                                    key={s.label}
+                                    onClick={() => setSize(s)}
+                                    className={`flex-1 py-2 rounded-lg border font-medium text-sm transition
+                                        ${size?.label === s.label
+                                            ? "bg-blue-500 text-white border-blue-500"
+                                            : "border-gray-300 text-gray-600 hover:border-blue-600"
                                         }`}
                                 >
-                                    <span>{t.name}</span>
-                                    <span>+{fmt(t.price)}</span>
+                                    {s.label}
+                                    {s.extra > 0 && (
+                                        <span className="text-xs block opacity-75">+{fmt(s.extra)}</span>
+                                    )}
                                 </button>
-                            );
-                        })}
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
+
+                {/* Topping — chỉ milktea */}
+                {hasTopping && (
+                    <div className="mb-4">
+                        <p className="font-semibold text-gray-700 mb-2">Topping</p>
+                        <div className="grid grid-cols-2 gap-2">
+                            {TOPPINGS.map(t => {
+                                const selected = selectedToppings.find(x => x.id === t.id);
+                                return (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => toggleTopping(t)}
+                                        className={`flex justify-between px-3 py-2 rounded-lg border text-sm transition
+                                            ${selected
+                                                ? "bg-blue-50 border-blue-500 text-blue-700"
+                                                : "border-gray-200 text-gray-600 hover:border-blue-300"
+                                            }`}
+                                    >
+                                        <span>{t.name}</span>
+                                        <span>+{fmt(t.price)}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
 
                 {/* Số lượng */}
                 <div className="mb-4">
@@ -142,7 +155,7 @@ export const ProductOptionModal = ({ product, onClose }) => {
                         placeholder="Ít đá, ít đường, không đường..."
                         value={note}
                         onChange={e => setNote(e.target.value)}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
                     />
                 </div>
 
@@ -156,9 +169,9 @@ export const ProductOptionModal = ({ product, onClose }) => {
                     </button>
                     <button
                         onClick={handleAdd}
-                        className="flex-1 py-3 rounded-xl bg-amber-500 text-white font-bold hover:bg-amber-600 transition"
+                        className="flex-1 py-3 rounded-xl bg-blue-500 text-white font-bold hover:bg-blue-600 transition"
                     >
-                        Thêm • {fmt(total)}
+                        Thêm {fmt(total)}
                     </button>
                 </div>
             </div>

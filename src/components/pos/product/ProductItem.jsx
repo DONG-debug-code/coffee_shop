@@ -33,7 +33,7 @@ export const ProductItem = ({ tim = [], onSelect }) => {
                         <h3 className="cursor-pointer select-none font-semibold text-gray-800 mb-1">
                             {item.name}
                         </h3>
-                        <p className="cursor-pointer select-none text-green-600 font-bold">
+                        <p className="cursor-pointer select-none text-blue-600 font-bold">
                             {formatPrice(item.price)}
                         </p>
                     </div>

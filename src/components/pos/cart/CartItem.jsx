@@ -30,7 +30,7 @@ export const CartItem = ({ item }) => {
                                     onClick={() => updateQuantity(item.cartId, -1)}
                                     className="w-6 h-8 flex items-center justify-center hover:bg-gray-100 rounded transition-colors font-black">-
                                 </button>
-                                <span className="w-6 text-center font-bold text-lg">1</span>
+                                <span className="w-6 text-center font-bold text-lg">{item.quantity}</span>
                                 <button
                                     onClick={() => updateQuantity(item.cartId, 1)}
                                     className="w-6 h-8 flex items-center justify-center hover:bg-gray-100 rounded transition-colors font-black">+
@@ -40,7 +40,7 @@ export const CartItem = ({ item }) => {
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2 rounded"><IoTrashOutline />
                                 </button>
                             </div>
-                            <p className="font-bold text-green-600 text-lg">  {fmt(item.unitPrice * item.quantity)}</p>
+                            <p className="font-bold text-blue-600 text-lg">  {fmt(item.unitPrice * item.quantity)}</p>
                         </div>
                     </div>
                 </div>
