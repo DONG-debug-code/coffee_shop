@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { dulieu } from '../../../data/connectdata';
 
-export const ProductItem = ({ tim = [] }) => {
+export const ProductItem = ({ tim = [], onSelect }) => {
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -20,6 +20,7 @@ export const ProductItem = ({ tim = [] }) => {
                 tim.map(item => (
                     <div
                         key={item.id}
+                        onClick={() => onSelect(item)}
                         className="bg-white rounded-lg p-4 shadow hover:shadow-lg transition-shadow text-left"
                     >
                         <div className="cursor-pointer select-none w-full h-40 mb-3 overflow-hidden rounded-md bg-gray-200">
@@ -32,7 +33,7 @@ export const ProductItem = ({ tim = [] }) => {
                         <h3 className="cursor-pointer select-none font-semibold text-gray-800 mb-1">
                             {item.name}
                         </h3>
-                        <p className="cursor-pointer select-none text-green-600 font-bold">
+                        <p className="cursor-pointer select-none text-blue-600 font-bold">
                             {formatPrice(item.price)}
                         </p>
                     </div>
