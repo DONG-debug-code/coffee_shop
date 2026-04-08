@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import { useAuth } from "./AuthContext";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { dulieu } from "../data/connectdata";
+import { useTable } from "./TableContext";
 
 const CartContext = createContext();
 
@@ -21,11 +22,12 @@ export function CartProvider({ children }) {
   const [couponError, setCouponError] = useState("");
   const [manualDiscount, setManualDiscount] = useState({ type: "percent", value: 0 });
   const { user } = useAuth();
+  const { selectedTable, updateTableStatus, clearSelectedTable } = useTable();
 
   // Lọc size và topping theo categoryId
   const normalizeOptions = (categoryId, options) => { // Nếu category là drink/coffee thì bỏ qua size/topping dù có chọn
     const cat = categoryId?.toLowerCase(); // Chuẩn hoá để tránh lỗi do viết hoa/thường
-    if (cat === "drink" || cat === "coffee") { 
+    if (cat === "drink" || cat === "coffee") {
       return { ...options, size: null, toppings: [] };
     }
     if (cat === "tea") {
@@ -152,11 +154,19 @@ export function CartProvider({ children }) {
       amountPaid: paymentMethod === "cash" ? amountPaid : total, // Nếu thanh toán bằng thẻ, coi như khách đã trả đủ
       change: paymentMethod === "cash" ? amountPaid - total : 0, // Tiền thối nếu thanh toán bằng tiền mặt
       couponCode: coupon?.code || null, // Lưu lại mã giảm giá đã áp dụng (nếu có)
-      createdAt: serverTimestamp(), 
+      createdAt: serverTimestamp(),
       createdBy: user?.uid || null, // Lưu lại UID người tạo đơn (nếu đã đăng nhập) để tiện quản lý
+      tableId: selectedTable?.id || null,
+      tableName: selectedTable?.name || null,
     };
 
     const docRef = await addDoc(collection(dulieu, "orders"), orderData); // Lưu đơn hàng vào Firestore
+    // Cập nhật trạng thái bàn → paid
+    if (selectedTable) {
+      await updateTableStatus(selectedTable.id, "paid", null)
+      clearSelectedTable()
+    }
+
     clearCart();
     return { id: docRef.id, ...orderData };
   };

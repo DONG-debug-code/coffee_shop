@@ -32,12 +32,12 @@ export const SummaryCart = () => {
             {/* Xoá tất cả */}
             <button
                 onClick={clearCart}
-                className="w-full text-red-600 hover:bg-red-50 py-2 rounded-lg font-medium transition-colors">
+                className="w-full mb-3 text-red-600 hover:bg-red-50 py-2 rounded-lg font-medium transition-colors">
                 Xóa tất cả
             </button>
 
             {/* Mã giảm giá */}
-            <div className="mb-3">
+            {/* <div className="mb-3">
                 {coupon ? (
                     <div className="flex items-center justify-between bg-green-50 border border-green-300 rounded-lg px-3 py-2 text-sm">
                         <span className="text-green-700 font-medium">{coupon.code}</span>
@@ -61,7 +61,7 @@ export const SummaryCart = () => {
                     </div>
                 )}
                 {couponError && <p className="text-red-500 text-xs mt-1">{couponError}</p>}
-            </div>
+            </div> */}
 
             {/* Giảm giá thủ công */}
             <div className="flex gap-2 mb-3">
@@ -79,7 +79,7 @@ export const SummaryCart = () => {
                     placeholder={manualDiscount.type === 'percent' ? 'Giảm %' : 'Giảm tiền'}
                     value={manualDiscount.value || ""}
                     onChange={e => setManualDiscount(d => ({ ...d, value: Number(e.target.value) }))}
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400"
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
                 />
             </div>
 
@@ -90,12 +90,12 @@ export const SummaryCart = () => {
             </div>
 
             {/* Giảm giá */}
-            {couponDiscount > 0 && (
+            {/* {couponDiscount > 0 && (
                 <div className="flex justify-between text-sm mb-2 text-green-600">
                     <span>Mã ({coupon.code}):</span>
                     <span>-{fmt(couponDiscount)}</span>
                 </div>
-            )}
+            )} */}
             {manualDiscountAmount > 0 && (
                 <div className="flex justify-between text-sm mb-2 text-green-600">
                     <span>Giảm tay:</span>
@@ -104,12 +104,12 @@ export const SummaryCart = () => {
             )}
 
             {/* Thuế */}
-            {TAX_RATE > 0 && (
+            {/* {TAX_RATE > 0 && (
                 <div className="flex justify-between text-base mb-3">
                     <span className="text-gray-600">VAT ({TAX_RATE * 100}%):</span>
                     <span className="font-semibold">{fmt(tax)}</span>
                 </div>
-            )}
+            )} */}
 
             <div className="border-t border-gray-300 my-2"></div>
 

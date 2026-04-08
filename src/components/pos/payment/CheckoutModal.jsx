@@ -6,9 +6,7 @@ const fmt = (n) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency:
 // Các phương thức thanh toán có sẵn
 const PAYMENT_METHODS = [
     { id: "cash",     label: "Tiền mặt",       icon: "💵" },
-    { id: "transfer", label: "Chuyển khoản",   icon: "🏦" },
     { id: "qr",       label: "QR / Ví điện tử",icon: "📱" },
-    { id: "card",     label: "Thẻ",            icon: "💳" },
 ]
 
 // Modal thanh toán, cho phép chọn phương thức, nhập tiền khách đưa (nếu có), và hiển thị tổng kết trước khi xác nhận

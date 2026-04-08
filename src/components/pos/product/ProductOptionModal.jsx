@@ -72,7 +72,7 @@ export const ProductOptionModal = ({ product, onClose }) => {
                     />
                     <div>
                         <h2 className="text-lg font-bold text-gray-800">{product.name}</h2>
-                        <p className="text-green-600 font-semibold">{fmt(product.price)}</p>
+                        <p className="text-blue-600 font-semibold">{fmt(product.price)}</p>
                     </div>
                 </div>
 
@@ -133,14 +133,14 @@ export const ProductOptionModal = ({ product, onClose }) => {
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                            className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center text-xl hover:bg-gray-100"
+                            className="w-9 h-9 bg-blue-200 rounded-full border border-transparent text-blue-700 flex items-center justify-center text-xl hover:bg-blue-300"
                         >
                             −
                         </button>
                         <span className="w-8 text-center font-bold text-lg">{quantity}</span>
                         <button
                             onClick={() => setQuantity(q => q + 1)}
-                            className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center text-xl hover:bg-gray-100"
+                            className="w-9 h-9 bg-blue-500 rounded-full border border-transparent text-white flex items-center justify-center text-xl hover:bg-blue-400"
                         >
                             +
                         </button>

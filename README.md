@@ -50,3 +50,19 @@
  - cd coffee_shop
  - npm install
  - npm run dev
+
+ ## vấn đề luồng hoạt động cần làm(Quy trình order)
+1️⃣ Khách vào quán
+TablePage → click bàn → tạo order (status = open) → mở POS
+2️⃣ Order món
+Thêm món → update order
+3️⃣ Khách gọi thêm
+Mở lại bàn → thêm món → update order
+4️⃣ In tạm tính (optional)
+Click "In tạm tính"
+5️⃣ Thanh toán
+status = paid
+tableStatus = dirty
+6️⃣ Nhân viên dọn bàn
+Click "Dọn bàn"
+tableStatus = empty
