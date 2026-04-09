@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 import { useAuth } from "./AuthContext";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { dulieu } from "../data/connectdata";
-import { useTable } from "./TableContext";
+import { useOrder } from "./OrderContext";
 
 const CartContext = createContext();
 
@@ -22,8 +22,6 @@ export function CartProvider({ children }) {
   const [couponError, setCouponError] = useState("");
   const [manualDiscount, setManualDiscount] = useState({ type: "percent", value: 0 });
   const { user } = useAuth();
-
-  const { selectedTable, updateTableStatus, clearSelectedTable } = useTable();
 
   // Lọc size và topping theo categoryId
   const normalizeOptions = (categoryId, options) => { // Nếu category là drink/coffee thì bỏ qua size/topping dù có chọn
@@ -133,45 +131,6 @@ export function CartProvider({ children }) {
   const tax = afterDiscount * TAX_RATE;
   const total = afterDiscount + tax;
 
-  //Checkout — lưu đơn hàng vào Firestore
-  const checkout = async ({ paymentMethod, amountPaid }) => { // paymentMethod: "cash" hoặc "card", amountPaid chỉ cần nếu cash
-    const orderData = {
-      orderCode: `ORD-${Date.now()}`,
-      status: "paid",
-      paymentMethod,
-      items: cartItems.map((item) => ({
-        productId: item.product.id,
-        name: item.product.name,
-        size: item.size,
-        toppings: item.toppings.map((t) => t.name),
-        note: item.note,
-        unitPrice: item.unitPrice,
-        quantity: item.quantity,
-        subtotal: item.unitPrice * item.quantity,
-      })),
-      subtotal,
-      discount: couponDiscount + manualDiscountAmount,
-      total,
-      amountPaid: paymentMethod === "cash" ? amountPaid : total, // Nếu thanh toán bằng thẻ, coi như khách đã trả đủ
-      change: paymentMethod === "cash" ? amountPaid - total : 0, // Tiền thối nếu thanh toán bằng tiền mặt
-      couponCode: coupon?.code || null, // Lưu lại mã giảm giá đã áp dụng (nếu có)
-      createdAt: serverTimestamp(),
-      createdBy: user?.uid || null, // Lưu lại UID người tạo đơn (nếu đã đăng nhập) để tiện quản lý
-      tableId: selectedTable?.id || null,
-      tableName: selectedTable?.name || null,
-    };
-
-    const docRef = await addDoc(collection(dulieu, "orders"), orderData); // Lưu đơn hàng vào Firestore
-    // Cập nhật trạng thái bàn → paid
-    if (selectedTable) {
-      await updateTableStatus(selectedTable.id, "paid", null)
-      clearSelectedTable()
-    }
-
-    clearCart();
-    return { id: docRef.id, ...orderData };
-  };
-
   return (
     <CartContext.Provider
       value={{ // Các state và hàm liên quan đến giỏ hàng sẽ được expose ở đây để các component khác sử dụng
@@ -179,7 +138,7 @@ export function CartProvider({ children }) {
         coupon, couponError, applyCoupon, removeCoupon,
         manualDiscount, setManualDiscount,
         subtotal, couponDiscount, manualDiscountAmount,
-        totalDiscount, total, TAX_RATE, checkout,
+        totalDiscount, tax, total, TAX_RATE,
       }}
     >
       {children}

@@ -1,17 +1,45 @@
-import { useTable } from "../../context/TableContext";
-import { useRealtimeCollection } from "../../data/useCollection";
+
+import { collection, query, where, getDocs } from "firebase/firestore"
+import { useRealtimeCollection } from "../../data/useCollection"
+import { useOrder } from "../../context/OrderContext"
+import { dulieu } from "../../data/connectdata"
 
 const STATUS_CONFIG = {
-    empty:   { label: "Trống",          color: "bg-green-100 border-green-400 text-green-700" },
-    serving: { label: "Đang phục vụ",   color: "bg-red-100 border-red-400 text-red-700" },
-    paid:    { label: "Đã thanh toán",  color: "bg-blue-100 border-blue-400 text-blue-700" },
+    empty: { label: "Trống", color: "bg-green-100 border-green-400 text-green-700" },
+    serving: { label: "Đang phục vụ", color: "bg-red-100 border-red-400 text-red-700" },
 }
 
-export const TablePage = ({ onSelectTable }) => {
-    const { data: tables, loading } = useRealtimeCollection("tables");
-    const { selectedTable } = useTable();
+export const TablePage = ({ onSelectTable, onCleanTable }) => {
+    const { data: tables, loading } = useRealtimeCollection("tables")
+    const { selectTable, openExistingOrder } = useOrder()
 
-    // Nhóm bàn theo tầng
+    const handleClickTable = async (table) => {
+        if (table.status === "empty") {
+            // ✅ Chỉ lưu local, không động Firestore
+            selectTable(table)
+            onSelectTable(table)
+
+        } else if (table.status === "serving") {
+            // Lấy order đang mở
+            const q = query(
+                collection(dulieu, "orders"),
+                where("tableId", "==", table.id),
+                where("status", "==", "open")
+            )
+            const snap = await getDocs(q)
+            console.log("Số order tìm được:", snap.size) // ← thêm dòng này
+
+            if (!snap.empty) {
+                const orderDoc = snap.docs[0]
+                console.log("Order data:", orderDoc.data()) // ← thêm dòng này
+                openExistingOrder({ id: orderDoc.id, ...orderDoc.data() }, table)
+                onSelectTable(table)
+            } else {
+                console.log("Không tìm thấy order nào!") // ← thêm dòng này
+            }
+        }
+    }
+
     const floors = [...new Set(tables.map(t => t.floor))].sort()
 
     if (loading) return <div className="p-4 text-gray-400">Đang tải...</div>
@@ -26,21 +54,14 @@ export const TablePage = ({ onSelectTable }) => {
                             .filter(t => t.floor === floor)
                             .map(table => {
                                 const config = STATUS_CONFIG[table.status] || STATUS_CONFIG.empty
-                                const isSelected = selectedTable?.id === table.id
                                 return (
                                     <button
                                         key={table.id}
-                                        onClick={() => onSelectTable(table)}
-                                        className={`
-                                            p-4 rounded-xl border-2 font-semibold transition
-                                            ${config.color}
-                                            ${isSelected ? "ring-2 ring-blue-400 ring-offset-1" : ""}
-                                            ${table.status === "serving" ? "cursor-pointer" : ""}
-                                        `}
+                                        onClick={() => handleClickTable(table)}
+                                        className={`p-4 h-35 rounded-xl border-2 font-semibold transition hover:opacity-80 ${config.color}`}
                                     >
                                         <p className="text-lg">{table.name}</p>
                                         <p className="text-xs mt-1">{config.label}</p>
-                                        <p className="text-xs opacity-60">{table.capacity}</p>
                                     </button>
                                 )
                             })}

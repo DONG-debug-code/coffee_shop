@@ -1,11 +1,16 @@
 import React from 'react'
 import { useCart } from '../../../context/CartContext'
+import { useOrder } from '../../../context/OrderContext'
 import { CartItem } from './CartItem'
+import { OrderedItem } from './OrderedItem'  // ← tạo mới
 import { SummaryCart } from './SummaryCart'
 
+export const Cart = ({ onConfirmed }) => {
+    const { cartItems } = useCart()
+    const { currentOrder } = useOrder()
 
-export const Cart = () => {
-    const { cartItems } = useCart();
+    const orderedItems = currentOrder?.items || []  // món đã lưu Firestore
+    const hasAnything = orderedItems.length > 0 || cartItems.length > 0
 
     return (
         <div className='h-full flex flex-col select-none'>
@@ -19,16 +24,40 @@ export const Cart = () => {
                     )}
                 </h2>
             </div>
+
             <div className="flex-1 overflow-y-auto px-4 py-3">
-                 {cartItems.length === 0 ? (
+                {!hasAnything ? (
                     <p className="text-center text-gray-400 mt-10 text-sm">Chưa có món nào</p>
                 ) : (
-                    cartItems.map(item => (
-                        <CartItem key={item.cartId} item={item} />
-                    ))
+                    <>
+                        {/* Món đã xác nhận (từ Firestore) */}
+                        {orderedItems.length > 0 && (
+                            <div className="mb-3">
+                                <p className="text-xs text-gray-400 font-semibold mb-2 uppercase">
+                                    Đã order
+                                </p>
+                                {orderedItems.map((item, idx) => (
+                                    <OrderedItem key={idx} item={item} />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Món mới chưa xác nhận (local) */}
+                        {cartItems.length > 0 && (
+                            <div>
+                                <p className="text-xs text-amber-500 font-semibold mb-2 uppercase">
+                                    Món mới chưa xác nhận
+                                </p>
+                                {cartItems.map(item => (
+                                    <CartItem key={item.cartId} item={item} />
+                                ))}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
-            <SummaryCart />
+
+            <SummaryCart onConfirmed={onConfirmed} />
         </div>
     )
 }

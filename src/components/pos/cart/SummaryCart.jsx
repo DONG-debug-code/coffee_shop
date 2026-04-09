@@ -2,26 +2,42 @@ import React, { useState } from 'react'
 import { useCart } from '../../../context/CartContext'
 import { CheckoutModal } from '../payment/CheckoutModal'
 import { OrderSuccessModal } from '../payment/OrderSuccessModal'
+import { useOrder } from '../../../context/OrderContext'
 
 const fmt = (n) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)
 
 // Component hiển thị phần tóm tắt giỏ hàng, bao gồm tổng tiền, mã giảm giá, giảm giá thủ công, thuế, và nút thanh toán. 
 // Cho phép xoá tất cả, áp dụng mã giảm giá, và nhập giảm giá thủ công. Khi nhấn thanh toán sẽ mở modal CheckoutModal, và sau khi thanh toán thành công sẽ hiển thị OrderSuccessModal.
-export const SummaryCart = () => {
+export const SummaryCart = ({ onConfirmed }) => {
     const { // Lấy các thông tin cần thiết từ context giỏ hàng
         cartItems,
         subtotal, total, TAX_RATE,
+        totalDiscount,
+        tax,
         coupon, couponError, applyCoupon, removeCoupon, couponDiscount,
         manualDiscount, setManualDiscount, manualDiscountAmount, clearCart,
     } = useCart()
 
     const [couponInput, setCouponInput] = useState("")
 
-    const [showCheckout, setShowCheckout] = useState(false)      
-    const [completedOrder, setCompletedOrder] = useState(null)   
+    const [showCheckout, setShowCheckout] = useState(false)
+    const [completedOrder, setCompletedOrder] = useState(null)
+    const { currentOrder, confirmItems } = useOrder()
+    // Tổng tiền hiển thị = total của order (đã lưu) + cart mới chưa confirm
+    const displayTotal = (currentOrder?.total || 0) + total
+
+
+    const handleConfirmOrder = async () => {
+        await confirmItems(cartItems, {
+            subtotal, totalDiscount, tax: 0, total
+        })
+        clearCart() // xoá cart sau khi confirm để gọi thêm món mới
+        alert("Đã xác nhận order!");
+        onConfirmed();
+    }
 
     // Hàm xử lý khi đơn hàng được thanh toán thành công, sẽ đóng modal thanh toán và mở modal hiển thị đơn hàng đã hoàn thành
-    const handleSuccess = (order) => {                          
+    const handleSuccess = (order) => {
         setShowCheckout(false)
         setCompletedOrder(order)
     }
@@ -86,7 +102,7 @@ export const SummaryCart = () => {
             {/* Tạm tính */}
             <div className="flex justify-between text-base mb-2">
                 <span className="text-gray-600">Tạm tính:</span>
-                <span className="font-semibold">{fmt(subtotal)}</span>
+                <span className="font-semibold">{fmt((currentOrder?.subtotal || 0) + subtotal)}</span>
             </div>
 
             {/* Giảm giá */}
@@ -116,13 +132,22 @@ export const SummaryCart = () => {
             {/* Tổng */}
             <div className="flex justify-between items-center mb-2">
                 <span className="text-xl font-bold text-gray-800">Tổng cộng:</span>
-                <span className="text-2xl font-bold text-blue-600">{fmt(total)}</span>
+                <span className="text-2xl font-bold text-blue-600"> {fmt((currentOrder?.total || 0) + total)}</span>
             </div>
+
+            {/* Xác nhận order */}
+            <button
+                onClick={handleConfirmOrder}
+                disabled={cartItems.length === 0}
+                className="w-full mb-2 bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-lg font-bold text-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+            >
+                Xác nhận order
+            </button>
 
             {/* Thanh toán */}
             <button
                 onClick={() => setShowCheckout(true)}
-                disabled={cartItems.length === 0}
+                disabled={!currentOrder}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-bold text-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-lg">
                 Thanh toán
             </button>
