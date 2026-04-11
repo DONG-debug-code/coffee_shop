@@ -53,7 +53,7 @@ export const Product = () => {
             {selectedProduct && (
                 <ProductOptionModal
                     product={selectedProduct}
-                    onClose={() => setSelectedProduct(null)}  // ← thêm
+                    onClose={() => setSelectedProduct(null)}
                 />
             )}
         </div>

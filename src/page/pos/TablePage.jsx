@@ -15,7 +15,7 @@ export const TablePage = ({ onSelectTable, onCleanTable }) => {
 
     const handleClickTable = async (table) => {
         if (table.status === "empty") {
-            // ✅ Chỉ lưu local, không động Firestore
+            //Chỉ lưu local, không động Firestore
             selectTable(table)
             onSelectTable(table)
 
@@ -27,15 +27,15 @@ export const TablePage = ({ onSelectTable, onCleanTable }) => {
                 where("status", "==", "open")
             )
             const snap = await getDocs(q)
-            console.log("Số order tìm được:", snap.size) // ← thêm dòng này
+            console.log("Số order tìm được:", snap.size)
 
             if (!snap.empty) {
                 const orderDoc = snap.docs[0]
-                console.log("Order data:", orderDoc.data()) // ← thêm dòng này
+                console.log("Order data:", orderDoc.data()) 
                 openExistingOrder({ id: orderDoc.id, ...orderDoc.data() }, table)
                 onSelectTable(table)
             } else {
-                console.log("Không tìm thấy order nào!") // ← thêm dòng này
+                console.log("Không tìm thấy order nào!") 
             }
         }
     }

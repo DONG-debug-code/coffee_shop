@@ -52,4 +52,3 @@
  - npm run dev
 
 ## vấn đề cần giải quyết
-khi order ở bàn A1 -> xác nhận order và quay về màn hình danh sách bàn -> OK. nhưng khi vào bàn A2 lại xuất hiện thông tin các món đã order ở bàn A1 trong giỏ hàng và order món mới ở bàn A2 thì thông tin vẫn lưu vào 1 giỏ hàng (cả 2 đều giống thông tin món order) và bàn A2 chưa thay đổi trạng thái thành đang phục vụ. -> vấn đề là tất cả các bàn đều sử dụng chung 1 giỏ hàng.
