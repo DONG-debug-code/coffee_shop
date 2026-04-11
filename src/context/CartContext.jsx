@@ -21,7 +21,6 @@ export function CartProvider({ children }) {
   const [coupon, setCoupon] = useState(null);
   const [couponError, setCouponError] = useState("");
   const [manualDiscount, setManualDiscount] = useState({ type: "percent", value: 0 });
-  const { user } = useAuth();
 
   // Lọc size và topping theo categoryId
   const normalizeOptions = (categoryId, options) => { // Nếu category là drink/coffee thì bỏ qua size/topping dù có chọn

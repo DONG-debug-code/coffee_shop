@@ -18,13 +18,10 @@ export const SummaryCart = ({ onConfirmed }) => {
         manualDiscount, setManualDiscount, manualDiscountAmount, clearCart,
     } = useCart()
 
-    const [couponInput, setCouponInput] = useState("")
 
     const [showCheckout, setShowCheckout] = useState(false)
     const [completedOrder, setCompletedOrder] = useState(null)
     const { currentOrder, confirmItems, resetOrder } = useOrder()
-    // Tổng tiền hiển thị = total của order (đã lưu) + cart mới chưa confirm
-    const displayTotal = (currentOrder?.total || 0) + total
 
 
     const handleConfirmOrder = async () => {

@@ -67,8 +67,8 @@ export const CheckoutModal = ({ onClose, onSuccess }) => {
                             onClick={() => setMethod(m.id)}
                             className={`flex items-center gap-2 px-4 py-3 rounded-xl border font-medium transition
                                 ${method === m.id
-                                    ? "bg-green-50 border-green-500 text-green-700"
-                                    : "border-gray-200 text-gray-600 hover:border-green-300"
+                                    ? "bg-blue-50 border-blue-500 text-blue-700"
+                                    : "border-gray-200 text-gray-600 hover:border-blue-300"
                                 }`}
                         >
                             <span>{m.icon}</span>
@@ -85,7 +85,7 @@ export const CheckoutModal = ({ onClose, onSuccess }) => {
                             placeholder="Nhập số tiền..."
                             value={amountPaid}
                             onChange={e => setAmountPaid(e.target.value)}
-                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-lg focus:outline-none focus:border-green-400"
+                            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-lg focus:outline-none focus:border-blue-400"
                         />
                         <div className="flex gap-2 mt-2 flex-wrap">
                             {[50000, 100000, 200000, 500000].map(v => (
@@ -104,7 +104,7 @@ export const CheckoutModal = ({ onClose, onSuccess }) => {
                 <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-2">
                     <div className="flex justify-between text-gray-600">
                         <span>Tổng tiền:</span>
-                        <span className="font-bold text-lg text-green-600">{fmt(total)}</span>
+                        <span className="font-bold text-lg text-blue-600">{fmt(total)}</span>
                     </div>
                     {method === "cash" && amountPaid && (
                         <>
@@ -130,7 +130,7 @@ export const CheckoutModal = ({ onClose, onSuccess }) => {
                     <button
                         onClick={handleCheckout}
                         disabled={loading || (method === "cash" && (!amountPaid || change < 0))}
-                        className="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                        className="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
                     >
                         {loading ? "Đang xử lý..." : "Xác nhận"}
                     </button>

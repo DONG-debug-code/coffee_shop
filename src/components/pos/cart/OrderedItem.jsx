@@ -16,7 +16,7 @@ export const OrderedItem = ({ item }) => {
                 </div>
                 <div className="text-right">
                     <p className="text-xs text-gray-500">x{item.quantity}</p>
-                    <p className="text-sm font-bold text-green-600">{fmt(item.subtotal)}</p>
+                    <p className="text-sm font-bold text-blue-600">{fmt(item.subtotal)}</p>
                 </div>
             </div>
         </div>

@@ -1,4 +1,5 @@
 
+import { useState } from "react"
 import { collection, query, where, getDocs } from "firebase/firestore"
 import { useRealtimeCollection } from "../../data/useCollection"
 import { useOrder } from "../../context/OrderContext"
@@ -9,34 +10,36 @@ const STATUS_CONFIG = {
     serving: { label: "Đang phục vụ", color: "bg-red-100 border-red-400 text-red-700" },
 }
 
-export const TablePage = ({ onSelectTable, onCleanTable }) => {
+export const TablePage = ({ onSelectTable }) => {
     const { data: tables, loading } = useRealtimeCollection("tables")
     const { selectTable, openExistingOrder } = useOrder()
+    const [loadingTableId, setLoadingTableId] = useState(null)
 
     const handleClickTable = async (table) => {
-        if (table.status === "empty") {
-            //Chỉ lưu local, không động Firestore
-            selectTable(table)
-            onSelectTable(table)
+        try {
+            if (table.status === "empty") {
+                //Chỉ lưu local, không động Firestore
+                selectTable(table)
+            } else if (table.status === "serving") {
+                setLoadingTableId(table.id)
+                // Lấy order đang mở
+                const q = query(
+                    collection(dulieu, "orders"),
+                    where("tableId", "==", table.id),
+                    where("status", "==", "open")
+                )
+                const snap = await getDocs(q)
 
-        } else if (table.status === "serving") {
-            // Lấy order đang mở
-            const q = query(
-                collection(dulieu, "orders"),
-                where("tableId", "==", table.id),
-                where("status", "==", "open")
-            )
-            const snap = await getDocs(q)
-            console.log("Số order tìm được:", snap.size)
-
-            if (!snap.empty) {
-                const orderDoc = snap.docs[0]
-                console.log("Order data:", orderDoc.data()) 
-                openExistingOrder({ id: orderDoc.id, ...orderDoc.data() }, table)
-                onSelectTable(table)
-            } else {
-                console.log("Không tìm thấy order nào!") 
+                if (!snap.empty) {
+                    const orderDoc = snap.docs[0]
+                    openExistingOrder({ id: orderDoc.id, ...orderDoc.data() }, table)
+                }
             }
+            onSelectTable(table)
+        } catch (error) {
+            console.error("Lỗi khi xử lý bàn:", error)
+        } finally {
+            setLoadingTableId(null)
         }
     }
 
@@ -54,14 +57,16 @@ export const TablePage = ({ onSelectTable, onCleanTable }) => {
                             .filter(t => t.floor === floor)
                             .map(table => {
                                 const config = STATUS_CONFIG[table.status] || STATUS_CONFIG.empty
+                                const isLoading = loadingTableId === table.id
                                 return (
                                     <button
                                         key={table.id}
                                         onClick={() => handleClickTable(table)}
-                                        className={`p-4 h-35 rounded-xl border-2 font-semibold transition hover:opacity-80 ${config.color}`}
+                                        disabled={isLoading}
+                                        className={`p-4 h-35 rounded-xl border-2 font-semibold transition hover:opacity-80 ${config.color} ${isLoading ? "opacity-50 cursor-wait" : ""}`}
                                     >
                                         <p className="text-lg">{table.name}</p>
-                                        <p className="text-xs mt-1">{config.label}</p>
+                                        <p className="text-xs mt-1">{isLoading ? "Đang tải..." : config.label}</p>
                                     </button>
                                 )
                             })}

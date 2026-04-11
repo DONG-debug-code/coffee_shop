@@ -6,26 +6,26 @@ import { useAuth } from "./AuthContext"
 const OrderContext = createContext()
 
 export function OrderProvider({ children }) {
-    const [currentOrder, setCurrentOrder] = useState(null)
+    const [currentOrder, setCurrentOrder] = useState(null) // order đang thao tác (mới tạo hoặc đã có sẵn)
     const [selectedTable, setSelectedTable] = useState(null) // ← chỉ lưu local
     const { user } = useAuth()
 
     // Click bàn trống → chỉ lưu local, KHÔNG lưu Firestore
     const selectTable = (table) => {
-        setSelectedTable(table)
+        setSelectedTable(table) // Lưu bàn đang chọn vào context để các component khác dùng
     }
 
     // Mở lại order cũ (bàn đang serving)
     const openExistingOrder = (order, table) => {
-        setCurrentOrder(order)
-        setSelectedTable(table)
+        setCurrentOrder(order) // Lưu order đang thao tác vào context để các component khác dùng
+        setSelectedTable(table) // Đồng thời gán luôn bàn vào context để các component khác dùng, tránh lỗi mất bàn khi reload page hoặc chuyển view
     }
 
     // Xác nhận order → lưu Firestore lần đầu
     const confirmItems = async (cartItems, summary) => {
-        if (!selectedTable) return
+        if (!selectedTable) return // An toàn nếu lỡ gọi confirmItems mà chưa chọn bàn, tránh lỗi null reference
 
-        if (!currentOrder) {
+        if (!currentOrder) { // Chưa có order nào → tạo mới
             const items = cartItems.map(item => ({
                 productId: item.product.id,
                 name: item.product.name,
@@ -37,11 +37,11 @@ export function OrderProvider({ children }) {
                 subtotal: item.unitPrice * item.quantity,
             }))
 
-            // ✅ Tính từ items thay vì summary
+            // Tính từ items thay vì summary
             const newSubtotal = items.reduce((sum, item) => sum + item.subtotal, 0)
             const newTotal = newSubtotal - (summary.totalDiscount || 0) + (summary.tax || 0)
 
-            const orderData = {
+            const orderData = { // Dữ liệu order mới
                 tableId: selectedTable.id,
                 tableName: selectedTable.name,
                 status: "open",
@@ -58,16 +58,16 @@ export function OrderProvider({ children }) {
                 createdBy: user?.uid || null,
             }
 
-            const docRef = await addDoc(collection(dulieu, "orders"), orderData)
+            const docRef = await addDoc(collection(dulieu, "orders"), orderData) // Tạo order mới trên Firestore, lấy docRef để có ID
 
-            await updateDoc(doc(dulieu, "tables", selectedTable.id), {
+            await updateDoc(doc(dulieu, "tables", selectedTable.id), { // Cập nhật trạng thái bàn sang serving và lưu currentOrderId để dễ truy xuất sau này
                 status: "serving",
                 currentOrderId: docRef.id,
             })
 
-            setCurrentOrder({ id: docRef.id, ...orderData })
+            setCurrentOrder({ id: docRef.id, ...orderData }) // Lưu order đang thao tác vào context để các component khác dùng, có ID từ Firestore
 
-        } else {
+        } else { // Đã có order → cập nhật items (gộp với items cũ nếu cùng sản phẩm + tuỳ chọn), subtotal, total
             const existingItems = currentOrder.items || []
             const newItems = cartItems.map(item => ({
                 productId: item.product.id,
@@ -99,7 +99,7 @@ export function OrderProvider({ children }) {
                 }
             })
 
-            // ✅ Tính từ toàn bộ mergedItems
+            // Tính từ toàn bộ mergedItems
             const newSubtotal = mergedItems.reduce((sum, item) => sum + item.subtotal, 0)
             const newTotal = newSubtotal - (summary.totalDiscount || 0) + (summary.tax || 0)
 
