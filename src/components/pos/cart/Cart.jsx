@@ -5,9 +5,10 @@ import { CartItem } from './CartItem'
 import { OrderedItem } from './OrderedItem'  // ← tạo mới
 import { SummaryCart } from './SummaryCart'
 
-export const Cart = ({ onConfirmed }) => {
+export const Cart = ({ onConfirmed, resetOrder, }) => {
     const { cartItems } = useCart()
     const { currentOrder } = useOrder()
+    console.log("currentOrder trong Cart:", currentOrder?.tableName, currentOrder?.items);
 
     const orderedItems = currentOrder?.items || []  // món đã lưu Firestore
     const hasAnything = orderedItems.length > 0 || cartItems.length > 0

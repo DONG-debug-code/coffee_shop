@@ -47,22 +47,9 @@
  - Kiến trúc dễ mở rộng backend
 # Cài đặt
  - git clone https://github.com/DONG-debug-code/coffee_shop.git
- - cd coffee_shop
+ - cd qlquancf
  - npm install
  - npm run dev
 
- ## vấn đề luồng hoạt động cần làm(Quy trình order)
-1️⃣ Khách vào quán
-TablePage → click bàn → tạo order (status = open) → mở POS
-2️⃣ Order món
-Thêm món → update order
-3️⃣ Khách gọi thêm
-Mở lại bàn → thêm món → update order
-4️⃣ In tạm tính (optional)
-Click "In tạm tính"
-5️⃣ Thanh toán
-status = paid
-tableStatus = dirty
-6️⃣ Nhân viên dọn bàn
-Click "Dọn bàn"
-tableStatus = empty
+## vấn đề cần giải quyết
+khi order ở bàn A1 -> xác nhận order và quay về màn hình danh sách bàn -> OK. nhưng khi vào bàn A2 lại xuất hiện thông tin các món đã order ở bàn A1 trong giỏ hàng và order món mới ở bàn A2 thì thông tin vẫn lưu vào 1 giỏ hàng (cả 2 đều giống thông tin món order) và bàn A2 chưa thay đổi trạng thái thành đang phục vụ. -> vấn đề là tất cả các bàn đều sử dụng chung 1 giỏ hàng.

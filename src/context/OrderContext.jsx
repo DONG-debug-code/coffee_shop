@@ -121,6 +121,12 @@ export function OrderProvider({ children }) {
         }
     }
 
+    //reset order + bàn
+    const resetOrder = () => {
+        setCurrentOrder(null)
+        setSelectedTable(null)
+    }
+
     // Thanh toán → update order + bàn về empty
     const payOrder = async ({ paymentMethod, couponCode }) => {
         if (!currentOrder) return
@@ -170,6 +176,7 @@ export function OrderProvider({ children }) {
             confirmItems,
             payOrder,
             cancelOrder,
+            resetOrder,
         }}>
             {children}
         </OrderContext.Provider>

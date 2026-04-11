@@ -22,7 +22,7 @@ export const SummaryCart = ({ onConfirmed }) => {
 
     const [showCheckout, setShowCheckout] = useState(false)
     const [completedOrder, setCompletedOrder] = useState(null)
-    const { currentOrder, confirmItems } = useOrder()
+    const { currentOrder, confirmItems, resetOrder } = useOrder()
     // Tổng tiền hiển thị = total của order (đã lưu) + cart mới chưa confirm
     const displayTotal = (currentOrder?.total || 0) + total
 
@@ -33,6 +33,7 @@ export const SummaryCart = ({ onConfirmed }) => {
         })
         clearCart() // xoá cart sau khi confirm để gọi thêm món mới
         alert("Đã xác nhận order!");
+        resetOrder(); // reset order + bàn sau khi xác nhận
         onConfirmed();
     }
 
@@ -161,7 +162,12 @@ export const SummaryCart = ({ onConfirmed }) => {
             {completedOrder && (
                 <OrderSuccessModal
                     order={completedOrder}
-                    onClose={() => setCompletedOrder(null)}
+                    onClose={() => {
+                        setCompletedOrder(null)
+                        resetOrder();
+                        onConfirmed();
+                    }
+                    }
                 />
             )}
         </div>
