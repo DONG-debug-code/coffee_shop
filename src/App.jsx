@@ -11,7 +11,6 @@ import { User } from './page/admin/User';
 import { Menu } from './page/admin/Menu';
 import { Order } from './page/admin/Order';
 import { Table } from './page/admin/Table';
-import { Report } from './page/admin/Report';
 import { AuthProvider } from './context/AuthContext';
 
 
@@ -34,7 +33,6 @@ function App() {
             <Route path='menu' element={<Menu />} />
             <Route path='order' element={<Order />} />
             <Route path='table' element={<Table />} />
-            <Route path='report' element={<Report />} />
           </Route>
 
           <Route path='/pos/*' element={

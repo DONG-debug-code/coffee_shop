@@ -2,10 +2,10 @@ import React from 'react'
 import { useCart } from '../../../context/CartContext'
 import { useOrder } from '../../../context/OrderContext'
 import { CartItem } from './CartItem'
-import { OrderedItem } from './OrderedItem'  // ← tạo mới
+import { OrderedItem } from './OrderedItem' 
 import { SummaryCart } from './SummaryCart'
 
-export const Cart = ({ onConfirmed, resetOrder, }) => {
+export const Cart = ({ onConfirmed, }) => {
     const { cartItems } = useCart()
     const { currentOrder } = useOrder()
 
@@ -24,6 +24,7 @@ export const Cart = ({ onConfirmed, resetOrder, }) => {
                     )}
                 </h2>
             </div>
+
 
             <div className="flex-1 overflow-y-auto px-4 py-3">
                 {!hasAnything ? (

@@ -1,5 +1,4 @@
 import React from 'react'
-import { TbReportMoney } from "react-icons/tb";
 import { RxDashboard } from "react-icons/rx";
 import { HiUserGroup } from "react-icons/hi";
 import { FaRegCircleUser } from "react-icons/fa6";
@@ -17,7 +16,6 @@ export const SideBar = () => {
                 <Link to="/admin/menu" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý menu <LuSquareMenu className='text-lg' /></Link>
                 <Link to="/admin/order" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý đơn hàng <BsCartCheckFill className='text-lg' /></Link>
                 <Link to="/admin/table" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý bàn <SiAirtable className='text-lg' /></Link>
-                <Link to="/admin/report" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Báo cáo <TbReportMoney className='text-lg' /></Link>
             </nav>
     )
 }

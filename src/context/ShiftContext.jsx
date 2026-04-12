@@ -33,9 +33,7 @@ export function ShiftProvider({ children }) {
                 limit(1)
             )
             const snap = await getDocs(q)
-            console.log("Số ca open tìm được:", snap.size)
             if (!snap.empty) {
-                console.log("Ca đang mở:", snap.docs[0].data())
                 setCurrentShift({ id: snap.docs[0].id, ...snap.docs[0].data() })
             } else {
                 setCurrentShift(null)

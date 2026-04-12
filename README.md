@@ -51,4 +51,6 @@
  - npm install
  - npm run dev
 
-## vấn đề cần giải quyết
+## logic cần sửa
+1. xác nhận order sẽ lưu thông tin vào orders và khi thanh toán thành công sẽ xóa dữ order đó(giảm dữ liệu cho database) -> lưu vào doanh thu trước khi xóa
+

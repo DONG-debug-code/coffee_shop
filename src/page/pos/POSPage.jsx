@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { Product } from '../../components/pos/product/Product'
 import { Cart } from '../../components/pos/cart/Cart'
 import { useOrder } from '../../context/OrderContext'
@@ -6,7 +6,6 @@ import { TablePage } from './TablePage'
 import { useTable } from '../../context/TableContext'
 import { useRealtimeCollection } from '../../data/useCollection'
 import { useShift } from '../../context/ShiftContext'
-import { OpenShiftModal } from '../../components/pos/shift/OpenShiftModal'
 
 export const POSPage = () => {
     const { currentOrder, selectedTable: orderTable, resetOrder, transferTable, mergeTable } = useOrder()
@@ -17,9 +16,15 @@ export const POSPage = () => {
     const [showMerge, setShowMerge] = useState(false)
     const { currentShift, loadingShift } = useShift()
 
+    //ref để track currentShift mới nhất
+    const currentShiftRef = useRef(currentShift)
+    useEffect(() => {
+        currentShiftRef.current = currentShift
+    }, [currentShift])
+
     const handleSelectTable = useCallback((table) => {
         // ← chặn nếu chưa mở ca
-        if (!currentShift) {
+        if (!currentShiftRef.current) {
             alert("Vui lòng mở ca trước khi order!")
             return
         }
@@ -75,9 +80,6 @@ export const POSPage = () => {
 
     return (
         <>
-            {/* Popup mở ca nếu chưa có ca */}
-            {!currentShift && <OpenShiftModal />}
-
             {view === "table" ? (
                 <div className="flex-1 overflow-y-auto bg-gray-100 select-none">
                     <div className="p-2 pl-4 bg-amber-50 border-b border-amber-200">

@@ -6,6 +6,7 @@ import { useShift } from '../../context/ShiftContext';
 import { CloseShiftModal } from './shift/CloseShiftModal';
 import { OpenShiftModal } from './shift/OpenShiftModal'
 import { useState } from 'react';
+import { ShiftDashboard } from './shift/ShiftDashboard';
 
 export const Header = () => {
 
@@ -13,6 +14,7 @@ export const Header = () => {
     const { currentShift } = useShift()
     const [showCloseShift, setShowCloseShift] = useState(false)
     const [showOpenShift, setShowOpenShift] = useState(false)
+    const [showDashboard, setShowDashboard] = useState(false)
 
     const navigate = useNavigate();
 
@@ -38,6 +40,14 @@ export const Header = () => {
                             <h1 className="cursor-pointer select-none text-xl font-bold text-white">Coffee A Đông</h1>
                             <p className="cursor-pointer select-none text-xs text-gray-300">Màn hình POS</p>
                         </div>
+                        {currentShift && (
+                            <button
+                                onClick={() => setShowDashboard(true)}
+                                className="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition"
+                            >
+                                Doanh thu
+                            </button>
+                        )}
                     </div>
                     <div className="flex items-center space-x-4">
                         <div className="text-right">
@@ -75,6 +85,29 @@ export const Header = () => {
             {/* Modal đóng ca */}
             {showCloseShift && (
                 <CloseShiftModal onClose={() => setShowCloseShift(false)} />
+            )}
+            {/* Modal doanh thu */}
+            {showDashboard && (
+                <div
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+                    onClick={() => setShowDashboard(false)}
+                >
+                    <div
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-bold text-gray-800">Doanh thu ca</h2>
+                            <button
+                                onClick={() => setShowDashboard(false)}
+                                className="text-gray-400 hover:text-gray-600 text-xl"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <ShiftDashboard />
+                    </div>
+                </div>
             )}
         </>
     )
