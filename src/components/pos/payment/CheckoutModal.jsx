@@ -130,7 +130,7 @@ export const CheckoutModal = ({ onClose, onSuccess }) => {
                     <button
                         onClick={handleCheckout}
                         disabled={loading || (method === "cash" && (!amountPaid || change < 0))}
-                        className="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                        className="flex-1 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
                     >
                         {loading ? "Đang xử lý..." : "Xác nhận"}
                     </button>

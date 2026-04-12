@@ -2,10 +2,17 @@ import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../data/connectdata'
 import { useAuth } from '../../context/AuthContext';
+import { useShift } from '../../context/ShiftContext';
+import { CloseShiftModal } from './shift/CloseShiftModal';
+import { OpenShiftModal } from './shift/OpenShiftModal'
+import { useState } from 'react';
 
 export const Header = () => {
 
-    const {user, role} = useAuth();
+    const { user, role } = useAuth();
+    const { currentShift } = useShift()
+    const [showCloseShift, setShowCloseShift] = useState(false)
+    const [showOpenShift, setShowOpenShift] = useState(false)
 
     const navigate = useNavigate();
 
@@ -23,24 +30,52 @@ export const Header = () => {
     }
 
     return (
-        <header className="bg-blue-500 shadow-lg select-none">
-            <div className="flex items-center justify-between px-6 py-4">
-                <div className="flex items-center space-x-3">
-                    <div>
-                        <h1 className="cursor-pointer select-none text-xl font-bold text-white">Coffee A Đông</h1>
-                        <p className="cursor-pointer select-none text-xs text-gray-300">Màn hình POS</p>
+        <>
+            <header className="bg-blue-500 shadow-lg select-none">
+                <div className="flex items-center justify-between px-6 py-4">
+                    <div className="flex items-center space-x-3">
+                        <div>
+                            <h1 className="cursor-pointer select-none text-xl font-bold text-white">Coffee A Đông</h1>
+                            <p className="cursor-pointer select-none text-xs text-gray-300">Màn hình POS</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                            <p className="cursor-pointer select-none text-sm font-medium text-white">{role === "admin" ? "Admin" : "Staff"}</p>
+                            <p className="cursor-pointer select-none text-xs text-gray-300">{user?.email || "Chưa đăng nhập"}</p>
+                        </div>
+                        {/* Chưa có ca → nút Mở ca */}
+                        {!currentShift && (
+                            <button
+                                onClick={() => setShowOpenShift(true)}
+                                className="bg-green-400 text-gray-800 px-4 py-2 rounded-sm hover:bg-green-300 transition text-sm font-medium"
+                            >
+                                Mở ca
+                            </button>
+                        )}
+
+                        {/* Nút đóng ca — chỉ hiện khi đang có ca */}
+                        {currentShift && (
+                            <button
+                                onClick={() => setShowCloseShift(true)}
+                                className="flex items-center space-x-2 bg-yellow-400 text-gray-800 px-4 py-2 rounded-sm hover:bg-yellow-300 transition"
+                            >
+                                <span className="text-sm font-medium">Đóng ca</span>
+                            </button>
+                        )}
+                        <button onClick={handleLogout} className="flex items-center space-x-2 bg-white text-blue-500 px-4 py-2 rounded-sm hover:bg-gray-200 transition">
+                            <span className="text-sm font-medium">Đăng xuất</span>
+                        </button>
                     </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                        <p className="cursor-pointer select-none text-sm font-medium text-white">{role === "admin" ? "Admin" : "Staff"}</p>
-                        <p className="cursor-pointer select-none text-xs text-gray-300">{user?.email || "Chưa đăng nhập"}</p>
-                    </div>
-                    <button onClick={handleLogout} className="flex items-center space-x-2 bg-white text-blue-500 px-4 py-2 rounded-sm hover:bg-gray-200 transition">
-                        <span className="text-sm font-medium">Đăng xuất</span>
-                    </button>
-                </div>
-            </div>
-        </header>
+            </header>
+            {showOpenShift && (
+                <OpenShiftModal onClose={() => setShowOpenShift(false)} />
+            )}
+            {/* Modal đóng ca */}
+            {showCloseShift && (
+                <CloseShiftModal onClose={() => setShowCloseShift(false)} />
+            )}
+        </>
     )
 }

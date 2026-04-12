@@ -4,21 +4,24 @@ import { Header } from '../components/pos/Header';
 import { CartProvider } from '../context/CartContext';
 import { TableProvider } from '../context/TableContext';
 import { OrderProvider } from '../context/OrderContext';
+import { ShiftProvider } from '../context/ShiftContext';
 
 export const POSLayout = () => {
   return (
-    <TableProvider>
-      <OrderProvider>
-        <CartProvider>
-          <div className="flex flex-col h-screen bg-gray-50">
-            <Header />
-            <div className="flex-1 flex overflow-hidden">
-              <POSPage />
+    <ShiftProvider>
+      <TableProvider>
+        <OrderProvider>
+          <CartProvider>
+            <div className="flex flex-col h-screen bg-gray-50">
+              <Header />
+              <div className="flex-1 flex overflow-hidden">
+                <POSPage />
+              </div>
             </div>
-          </div>
-        </CartProvider>
-      </OrderProvider>
-    </TableProvider>
+          </CartProvider>
+        </OrderProvider>
+      </TableProvider>
+    </ShiftProvider>
   )
 }
 

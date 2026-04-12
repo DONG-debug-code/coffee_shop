@@ -35,7 +35,7 @@ export const Product = () => {
     }
     return (
         <div>
-            <div className="sticky top-0 z-10 p-4 bg-white shadow-sm">
+            <div className="sticky top-0 z-1 p-4 bg-white shadow-sm">
                 <SearchProduct setKeyword={setKeyword} />
             </div>
             <div className="p-4 bg-white shadow-sm">

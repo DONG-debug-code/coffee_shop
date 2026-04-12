@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react"
-import { collection, addDoc, updateDoc, doc, serverTimestamp } from "firebase/firestore"
+import { collection, addDoc, updateDoc, doc, serverTimestamp, query, where, getDocs } from "firebase/firestore"
 import { dulieu } from "../data/connectdata"
 import { useAuth } from "./AuthContext"
 
@@ -56,6 +56,7 @@ export function OrderProvider({ children }) {
                 updatedAt: serverTimestamp(),
                 paidAt: null,
                 createdBy: user?.uid || null,
+                createdByName: user?.displayName || user?.email || null, 
             }
 
             const docRef = await addDoc(collection(dulieu, "orders"), orderData) // Tạo order mới trên Firestore, lấy docRef để có ID
@@ -167,6 +168,132 @@ export function OrderProvider({ children }) {
         setSelectedTable(null)
     }
 
+    // Chuyển bàn: order hiện tại → bàn mới
+    const transferTable = async (newTable) => {
+        if (!currentOrder) return
+
+        // Cập nhật order → tableId mới
+        await updateDoc(doc(dulieu, "orders", currentOrder.id), {
+            tableId: newTable.id,
+            tableName: newTable.name,
+            updatedAt: serverTimestamp(),
+        })
+
+        // Bàn cũ → empty
+        await updateDoc(doc(dulieu, "tables", currentOrder.tableId), {
+            status: "empty",
+            currentOrderId: null,
+        })
+
+        // Bàn mới → serving
+        await updateDoc(doc(dulieu, "tables", newTable.id), {
+            status: "serving",
+            currentOrderId: currentOrder.id,
+        })
+
+        setCurrentOrder(prev => ({
+            ...prev,
+            tableId: newTable.id,
+            tableName: newTable.name,
+        }))
+        setSelectedTable(newTable)
+    }
+
+    // Gộp bàn: bàn hiện tại → gộp vào bàn đích
+    const mergeTable = async (targetTable) => {
+        if (!currentOrder) return
+
+        // Lấy order của bàn đích
+        const q = query(
+            collection(dulieu, "orders"),
+            where("tableId", "==", targetTable.id),
+            where("status", "==", "open")
+        )
+        const snap = await getDocs(q)
+
+        let mergedItems = [...(currentOrder.items || [])]
+        let targetOrderId = null
+
+        if (!snap.empty) {
+            // Bàn đích đã có order → gộp món
+            const targetOrder = snap.docs[0]
+            targetOrderId = targetOrder.id
+            const targetItems = targetOrder.data().items || []
+
+            targetItems.forEach(targetItem => {
+                const existIdx = mergedItems.findIndex(e =>
+                    e.productId === targetItem.productId &&
+                    e.size === targetItem.size &&
+                    e.toppings.join() === targetItem.toppings.join() &&
+                    e.note === targetItem.note
+                )
+                if (existIdx >= 0) {
+                    mergedItems[existIdx] = {
+                        ...mergedItems[existIdx],
+                        quantity: mergedItems[existIdx].quantity + targetItem.quantity,
+                        subtotal: (mergedItems[existIdx].quantity + targetItem.quantity) * mergedItems[existIdx].unitPrice,
+                    }
+                } else {
+                    mergedItems.push(targetItem)
+                }
+            })
+
+            // Tính lại tổng
+            const newSubtotal = mergedItems.reduce((sum, i) => sum + i.subtotal, 0)
+
+            // Cập nhật order bàn đích
+            await updateDoc(doc(dulieu, "orders", targetOrderId), {
+                items: mergedItems,
+                subtotal: newSubtotal,
+                total: newSubtotal,
+                updatedAt: serverTimestamp(),
+            })
+
+            // Huỷ order bàn hiện tại
+            await updateDoc(doc(dulieu, "orders", currentOrder.id), {
+                status: "cancelled",
+                updatedAt: serverTimestamp(),
+            })
+            alert(`Đã gộp bàn vào ${targetTable.name}`)
+        } else {
+            // Bàn đích chưa có order → tạo mới
+            const newSubtotal = mergedItems.reduce((sum, i) => sum + i.subtotal, 0)
+            const newOrderData = {
+                ...currentOrder,
+                tableId: targetTable.id,
+                tableName: targetTable.name,
+                subtotal: newSubtotal,
+                total: newSubtotal,
+                updatedAt: serverTimestamp(),
+            }
+            delete newOrderData.id
+            const docRef = await addDoc(collection(dulieu, "orders"), newOrderData)
+            targetOrderId = docRef.id
+
+            // Huỷ order bàn hiện tại
+            await updateDoc(doc(dulieu, "orders", currentOrder.id), {
+                status: "cancelled",
+                updatedAt: serverTimestamp(),
+            })
+
+            // Bàn đích → serving
+            await updateDoc(doc(dulieu, "tables", targetTable.id), {
+                status: "serving",
+                currentOrderId: targetOrderId,
+            })
+        }
+
+        // Bàn hiện tại → empty
+        await updateDoc(doc(dulieu, "tables", currentOrder.tableId), {
+            status: "empty",
+            currentOrderId: null,
+        })
+
+        setCurrentOrder(null)
+        setSelectedTable(null)
+    }
+
+
     return (
         <OrderContext.Provider value={{
             currentOrder,
@@ -177,6 +304,7 @@ export function OrderProvider({ children }) {
             payOrder,
             cancelOrder,
             resetOrder,
+            transferTable, mergeTable,
         }}>
             {children}
         </OrderContext.Provider>
