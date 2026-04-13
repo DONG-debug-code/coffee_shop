@@ -52,5 +52,6 @@
  - npm run dev
 
 ## logic cần sửa
-1. xác nhận order sẽ lưu thông tin vào orders và khi thanh toán thành công sẽ xóa dữ order đó(giảm dữ liệu cho database) -> lưu vào doanh thu trước khi xóa
+1. xác nhận order sẽ lưu thông tin vào orders và khi thanh toán thành công sẽ xóa dữ liệu order đó(giảm dữ liệu cho database) -> lưu vào doanh thu trước khi xóa
 
+2. thêm trạng thái booking

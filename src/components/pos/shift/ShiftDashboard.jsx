@@ -24,7 +24,7 @@ export const ShiftDashboard = () => {
         <>
             <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold text-gray-700">Ca làm việc</h3>
-                <span className="text-xs text-gray-400">Bắt đầu: {formatTime(currentShift.startTime)}</span>
+                <span className="text-xs text-gray-400">Bắt đầu: {formatTime(currentShift?.startTime)}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

@@ -2,7 +2,8 @@
 import { createContext, useContext, useState, useEffect } from "react"
 import {
     collection, addDoc, updateDoc, doc,
-    serverTimestamp, query, where, getDocs, orderBy, limit
+    serverTimestamp, query, where, getDocs, limit,
+    increment
 } from "firebase/firestore"
 import { dulieu } from "../data/connectdata"
 import { useAuth } from "./AuthContext"
@@ -70,9 +71,9 @@ export function ShiftProvider({ children }) {
         const revenue = order.total || 0
 
         await updateDoc(doc(dulieu, "shifts", currentShift.id), {
-            totalOrders: (currentShift.totalOrders || 0) + 1,
-            totalRevenue: (currentShift.totalRevenue || 0) + revenue,
-            [`revenueByMethod.${method}`]: (currentShift.revenueByMethod?.[method] || 0) + revenue,
+            totalOrders: increment(1),
+            totalRevenue: increment(revenue),
+            [`revenueByMethod.${method}`]: increment(revenue),
         })
 
         setCurrentShift(prev => ({

@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useCart } from "../../../context/CartContext"
 import { useOrder } from "../../../context/OrderContext"
+import { useShift } from "../../../context/ShiftContext"
+import { serverTimestamp } from "firebase/firestore"
 
 const fmt = (n) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)
 
@@ -17,6 +19,7 @@ export const CheckoutModal = ({ onClose, onSuccess }) => {
     const [method, setMethod] = useState("cash")
     const [amountPaid, setAmountPaid] = useState("")
     const [loading, setLoading] = useState(false)
+    const { updateShiftOnOrder } = useShift()
 
     const total = (currentOrder?.total || 0) + cartTotal
 
@@ -33,6 +36,15 @@ export const CheckoutModal = ({ onClose, onSuccess }) => {
                 paymentMethod: method,
                 couponCode: coupon?.code || null,
             })
+
+            // Cập nhật doanh thu ca
+            await updateShiftOnOrder({
+                ...paidOrder,
+                total,
+                paymentMethod: method,
+                paidAt: serverTimestamp(),
+            })
+
             clearCart()
             onSuccess({
                 ...paidOrder,

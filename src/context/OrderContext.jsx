@@ -46,17 +46,17 @@ export function OrderProvider({ children }) {
                 tableName: selectedTable.name,
                 status: "open",
                 items,
-                subtotal: newSubtotal,   // ← sửa
+                subtotal: newSubtotal, 
                 discount: summary.totalDiscount || 0,
                 tax: summary.tax || 0,
-                total: newTotal,         // ← sửa
+                total: newTotal,     
                 paymentMethod: null,
                 couponCode: null,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
                 paidAt: null,
                 createdBy: user?.uid || null,
-                createdByName: user?.displayName || user?.email || null, 
+                createdByName: user?.displayName || user?.email || null,
             }
 
             const docRef = await addDoc(collection(dulieu, "orders"), orderData) // Tạo order mới trên Firestore, lấy docRef để có ID
@@ -136,8 +136,9 @@ export function OrderProvider({ children }) {
             status: "paid",
             paymentMethod,
             couponCode: couponCode || null,
-            paidAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
+            paidAt: serverTimestamp(),
+            createdBy: user.uid,
         })
 
         await updateDoc(doc(dulieu, "tables", currentOrder.tableId), {
