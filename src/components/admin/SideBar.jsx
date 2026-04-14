@@ -12,9 +12,9 @@ export const SideBar = () => {
             <nav className='py-6 flex flex-col'>
                 <Link to="/admin" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Dashboard <RxDashboard className='text-lg' /></Link>
                 <Link to="/admin/staff" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý nhân viên <HiUserGroup className='text-lg' /></Link>
-                <Link to="/admin/user" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý user <FaRegCircleUser className='text-lg' /></Link>
+                <Link to="/admin/user" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý tài khoản <FaRegCircleUser className='text-lg' /></Link>
                 <Link to="/admin/menu" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý menu <LuSquareMenu className='text-lg' /></Link>
-                <Link to="/admin/order" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý đơn hàng <BsCartCheckFill className='text-lg' /></Link>
+                <Link to="/admin/order" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý Orders <BsCartCheckFill className='text-lg' /></Link>
                 <Link to="/admin/table" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý bàn <SiAirtable className='text-lg' /></Link>
             </nav>
     )
