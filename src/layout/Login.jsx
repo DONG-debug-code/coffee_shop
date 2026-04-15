@@ -52,6 +52,8 @@ const Login = () => {
             else setError("Role k hợp lệ");
         } catch (err) { //nếu có lỗi trong quá trình đăng nhập
             setError("Bạn nhập sai email hoặc mật khẩu!");
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -62,6 +64,14 @@ const Login = () => {
                 className="bg-white p-8 rounded-xl shadow-lg w-[350px] select-none"
             >
                 <h2 className="text-2xl font-medium text-center mb-6">Đăng nhập</h2>
+                
+                {/* Error Message */}
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                        {error}
+                    </div>
+                )}
+
                 <div>
                     <label
                         htmlFor="email"
@@ -121,9 +131,10 @@ const Login = () => {
 
                 <button
                     type="submit"
-                    className="w-full mt-6 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
+                    disabled={isLoading}
+                    className="w-full mt-6 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                    Login
+                    {isLoading ? "Đang đăng nhập..." : "Login"}
                 </button>
             </form>
         </div>

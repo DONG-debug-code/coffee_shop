@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
                     if (snap.exists()) {
                         const data = snap.data();
 
-                        // ✅ Kiểm tra tài khoản bị khóa
+                        // Kiểm tra tài khoản bị khóa
                         if (data.status !== true) {
                             await signOut(auth);
                             setUser(null);
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
                             setRole(data.role ?? null);
                         }
                     } else {
-                        // ✅ Document không tồn tại → chưa được cấp quyền
+                        // Document không tồn tại → chưa được cấp quyền
                         await signOut(auth);
                         setUser(null);
                         setRole(null);

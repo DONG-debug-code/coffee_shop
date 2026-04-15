@@ -41,7 +41,7 @@ export const CloseShiftModal = ({ onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <div className="bg-white select-none rounded-2xl p-6 w-full max-w-sm shadow-xl">
                 <div className="text-center mb-4">
                     <h2 className="text-xl font-bold text-gray-800">Đóng ca</h2>
                     <p className="text-gray-400 text-sm">
