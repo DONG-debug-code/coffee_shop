@@ -5,17 +5,37 @@ import { FaRegCircleUser } from "react-icons/fa6";
 import { LuSquareMenu } from "react-icons/lu";
 import { BsCartCheckFill } from "react-icons/bs";
 import { SiAirtable } from "react-icons/si";
+import { AiOutlineSchedule } from "react-icons/ai";  // ← thêm
+import { GiMoneyStack } from "react-icons/gi";        // ← thêm
 import { Link } from 'react-router-dom';
 
 export const SideBar = () => {
     return (
-            <nav className='py-6 flex flex-col'>
-                <Link to="/admin" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Dashboard <RxDashboard className='text-lg' /></Link>
-                <Link to="/admin/staff" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý nhân viên <HiUserGroup className='text-lg' /></Link>
-                <Link to="/admin/user" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý tài khoản <FaRegCircleUser className='text-lg' /></Link>
-                <Link to="/admin/menu" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý menu <LuSquareMenu className='text-lg' /></Link>
-                <Link to="/admin/order" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý Orders <BsCartCheckFill className='text-lg' /></Link>
-                <Link to="/admin/table" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>Quản lý bàn <SiAirtable className='text-lg' /></Link>
-            </nav>
+        <nav className='py-6 flex flex-col'>
+            <Link to="/admin" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>
+                Dashboard <RxDashboard className='text-lg' />
+            </Link>
+            <Link to="/admin/staff" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>
+                Quản lý nhân viên <HiUserGroup className='text-lg' />
+            </Link>
+            <Link to="/admin/schedule" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>
+                Bảng ca làm <AiOutlineSchedule className='text-lg' />
+            </Link>
+            <Link to="/admin/salary" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>
+                Bảng lương <GiMoneyStack className='text-lg' />
+            </Link>
+            <Link to="/admin/user" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>
+                Quản lý tài khoản <FaRegCircleUser className='text-lg' />
+            </Link>
+            <Link to="/admin/menu" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>
+                Quản lý menu <LuSquareMenu className='text-lg' />
+            </Link>
+            <Link to="/admin/order" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>
+                Quản lý Orders <BsCartCheckFill className='text-lg' />
+            </Link>
+            <Link to="/admin/table" className='nav-link justify-between text-gray-700 text-start font-medium btn mb-2 p-3 hover:cursor-pointer hover:bg-gray-100 rounded-lg flex items-center'>
+                Quản lý bàn <SiAirtable className='text-lg' />
+            </Link>
+        </nav>
     )
 }

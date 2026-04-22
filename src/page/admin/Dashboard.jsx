@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore'
 import { dulieu } from '../../data/connectdata'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 const fmt = (n) => new Intl.NumberFormat('vi-VN').format(n) + 'đ'
 
@@ -24,9 +25,14 @@ export const Dashboard = () => {
     })
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(false)
+    const [chartData, setChartData] = useState([])
 
     useEffect(() => {
-        fetchOrders()
+        fetchChartData()  // chỉ chạy 1 lần
+    }, [])
+
+    useEffect(() => {
+        fetchOrders()     // chạy lại khi đổi ngày
     }, [dateFrom, dateTo])
 
     const fetchOrders = async () => {
@@ -56,13 +62,102 @@ export const Dashboard = () => {
         }
     }
 
+    const fetchChartData = async () => {
+        const today = new Date(); today.setHours(23, 59, 59, 999)
+        const from = new Date(); from.setDate(from.getDate() - 29); from.setHours(0, 0, 0, 0)
+
+        const snap = await getDocs(query(collection(dulieu, 'orders'), where('status', '==', 'paid')))
+        const all = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+
+        console.log("Tổng orders paid:", all.length) // ← thêm
+        console.log("Sample order paidAt:", all[0]?.paidAt)
+        // Tạo map 30 ngày
+        const dayMap = {}
+        for (let i = 0; i < 30; i++) {
+            const d = new Date()
+            d.setDate(d.getDate() - (29 - i))
+            const key = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })
+            dayMap[key] = 0
+        }
+
+        // Điền doanh thu vào từng ngày
+        all.forEach(o => {
+            const paidAt = o.paidAt?.toDate?.()
+            if (!paidAt || paidAt < from || paidAt > today) return
+            const key = paidAt.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })
+            if (dayMap[key] !== undefined) {
+                dayMap[key] += o.total || 0
+            }
+        })
+
+        console.log("chartData:", Object.entries(dayMap)) // ← thêm trước setChartData
+        setChartData(Object.entries(dayMap).map(([date, revenue]) => ({ date, revenue })))
+    }
+
     // Tính toán
     const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0)
     const totalOrders = orders.length
 
+    const revenueByMethod = orders.reduce((acc, o) => {
+        const m = o.paymentMethod || 'cash'
+        acc[m] = (acc[m] || 0) + (o.total || 0)
+        return acc
+    }, {})
+    const productMap = {}
+    orders.forEach(o => {
+        o.items?.forEach(item => {
+            if (!productMap[item.name]) productMap[item.name] = { name: item.name, quantity: 0, revenue: 0 }
+            productMap[item.name].quantity += item.quantity
+            productMap[item.name].revenue += item.subtotal
+        })
+    })
+    const topProducts = Object.values(productMap).sort((a, b) => b.quantity - a.quantity).slice(0, 5)
+
+    const CustomTooltip = ({ active, payload, label }) => {
+        if (active && payload?.length) {
+            return (
+                <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-lg text-sm">
+                    <p className="font-semibold text-gray-700">{label}</p>
+                    <p className="text-green-600 font-bold">{fmt(payload[0].value)}</p>
+                </div>
+            )
+        }
+        return null
+    }
+
     return (
         <div>
             <h2 className="text-2xl font-medium text-gray-800 mb-6">Doanh thu</h2>
+
+            {/* Biểu đồ doanh thu */}
+            <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-6">
+                <h3 className="font-semibold text-gray-700 mb-4">Doanh thu 30 ngày gần nhất</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis
+                            dataKey="date"
+                            tick={{ fontSize: 10 }}
+                            interval={4}
+                            stroke="#9ca3af"
+                        />
+                        <YAxis
+                            tick={{ fontSize: 10 }}
+                            stroke="#9ca3af"
+                            tickFormatter={v => v === 0 ? '0' : (v / 1000) + 'k'}
+                        />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Line
+                            type="monotone"
+                            dataKey="revenue"
+                            stroke="#3b82f6"
+                            strokeWidth={2}
+                            dot={{ r: 3, fill: '#3b82f6' }}
+                            activeDot={{ r: 5 }}
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
 
             {/* Chọn ngày */}
             <div className="flex items-center gap-3 mb-6">
@@ -114,7 +209,7 @@ export const Dashboard = () => {
                         </div>
                     </div>
 
-                    
+
                     {/* Danh sách đơn hàng */}
                     <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mt-4">
                         <h3 className="font-semibold text-gray-700 mb-4">

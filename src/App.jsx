@@ -14,6 +14,8 @@ import { Table } from './page/admin/Table';
 import { AuthProvider } from './context/AuthContext';
 import { POSPage } from './page/pos/POSPage';
 import { POSOrdersPage } from './page/pos/POSOrdersPage';
+import { SchedulePage } from './page/admin/SchedulePage';
+import { SalaryPage } from './page/admin/SalaryPage';
 
 
 function App() {
@@ -31,6 +33,8 @@ function App() {
           }>
             <Route index element={<Dashboard />} />
             <Route path='staff' element={<Staff />} />
+            <Route path='schedule' element={<SchedulePage />} />
+            <Route path='salary' element={<SalaryPage />} />
             <Route path='user' element={<User />} />
             <Route path='menu' element={<Menu />} />
             <Route path='order' element={<Order />} />
