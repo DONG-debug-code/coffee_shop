@@ -46,10 +46,10 @@ export function OrderProvider({ children }) {
                 tableName: selectedTable.name,
                 status: "open",
                 items,
-                subtotal: newSubtotal, 
+                subtotal: newSubtotal,
                 discount: summary.totalDiscount || 0,
                 tax: summary.tax || 0,
-                total: newTotal,     
+                total: newTotal,
                 paymentMethod: null,
                 couponCode: null,
                 createdAt: serverTimestamp(),
@@ -129,13 +129,15 @@ export function OrderProvider({ children }) {
     }
 
     // Thanh toán → update order + bàn về empty
-    const payOrder = async ({ paymentMethod, couponCode }) => {
+    const payOrder = async ({ paymentMethod, couponCode, amountPaid, change }) => {
         if (!currentOrder) return
 
         await updateDoc(doc(dulieu, "orders", currentOrder.id), {
             status: "paid",
             paymentMethod,
             couponCode: couponCode || null,
+            amountPaid: amountPaid || 0,  
+            change: change || 0,
             updatedAt: serverTimestamp(),
             paidAt: serverTimestamp(),
             createdBy: user.uid,

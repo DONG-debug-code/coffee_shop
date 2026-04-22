@@ -51,23 +51,22 @@
  - npm install
  - npm run dev
 
-## logic cần sửa
-1. xác nhận order sẽ lưu thông tin vào orders và khi thanh toán thành công sẽ xóa dữ liệu order đó(giảm dữ liệu cho database) -> lưu vào doanh thu trước khi xóa
-
 ## chức năng cần làm
 2. thêm trạng thái booking
-3. trang quản lý order trong ngày cho POS(xem danh sách/chi tiết order trong ngày, xuất lại hóa đơn)
-4. trang quản lý order cho admin (xem, tra cứu, xuất file excel)
+3. trang quản lý order trong ngày cho POS(xem danh sách/chi tiết order trong ngày, xuất lại hóa đơn) -> OK
+4. trang quản lý order cho admin (xem, tra cứu, xuất file excel) -> OK
 5. dashboard có biểu đồ doanh thu theo ngày
 6. quản lý nhân viên(ca làm, lương)
 
-chức năng 3:
-1. cả 2 sẽ nằm trong 1 nút menu và phân trang riêng dùng route(chỉ quản lý order là trang riêng)
-2. tất cả các đơn đã order trong ngày(mã đơn, ngày/giờ, món, tổng tiền, bàn, nhân viên order)
-3. dùng Receipt 
-chức năng 4:
-1. ngày, bàn
-2. theo bọ lọc
-3. chưa có gì
+
+## chức năng 5
+1. đường line
+2. 30 ngày
+3. chỉ doanh thu
+## chức năng 6
+1. lịch sử
+2. lương tính theo giờ và nhân lên theo tổng số giờ làm (vào ca đến ra ca) và + 3% doanh thu của nhân viên đó
+
+
 
 

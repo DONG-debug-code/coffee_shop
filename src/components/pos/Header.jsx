@@ -1,5 +1,5 @@
 import { signOut } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../data/connectdata'
 import { useAuth } from '../../context/AuthContext';
 import { useShift } from '../../context/ShiftContext';
@@ -17,6 +17,7 @@ export const Header = () => {
     const [showDashboard, setShowDashboard] = useState(false)
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = async () => {
         const confirmLogout = window.confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?");
@@ -48,7 +49,33 @@ export const Header = () => {
                                 Doanh thu
                             </button>
                         )}
+                         {/* Menu điều hướng */}
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => navigate('/pos')}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition
+                                ${location.pathname === '/pos'
+                                    ? 'bg-white text-blue-600'
+                                    : 'bg-white/20 text-white hover:bg-white/30'
+                                }`}
+                        >
+                             Bán hàng
+                        </button>
+                        <button
+                            onClick={() => navigate('/pos/orders')}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition
+                                ${location.pathname === '/pos/orders'
+                                    ? 'bg-white text-blue-600'
+                                    : 'bg-white/20 text-white hover:bg-white/30'
+                                }`}
+                        >
+                             Đơn hàng
+                        </button>
                     </div>
+                    </div>
+
+                   
+
                     <div className="flex items-center space-x-4">
                         <div className="text-right">
                             <p className="cursor-pointer select-none text-sm font-medium text-white">{role === "admin" ? "Admin" : "Staff"}</p>

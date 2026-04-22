@@ -7,10 +7,10 @@ import { serverTimestamp } from "firebase/firestore"
 const fmt = (n) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n)
 
 const PAYMENT_METHODS = [
-    { id: "cash",     label: "Tiền mặt",        icon: "💵" },
-    { id: "transfer", label: "Chuyển khoản",    icon: "🏦" },
-    { id: "qr",       label: "QR / Ví điện tử", icon: "📱" },
-    { id: "card",     label: "Thẻ",             icon: "💳" },
+    { id: "cash", label: "Tiền mặt", icon: "💵" },
+    { id: "transfer", label: "Chuyển khoản", icon: "🏦" },
+    { id: "qr", label: "QR / Ví điện tử", icon: "📱" },
+    { id: "card", label: "Thẻ", icon: "💳" },
 ]
 
 export const CheckoutModal = ({ onClose, onSuccess }) => {
@@ -31,16 +31,22 @@ export const CheckoutModal = ({ onClose, onSuccess }) => {
         if (method === "cash" && Number(amountPaid) < total) return
         setLoading(true)
         try {
+            const paid = method === "cash" ? Number(amountPaid) : total
+            const changeAmount = method === "cash" ? Number(amountPaid) - total : 0
             // Thanh toán → update order + bàn về empty
             const paidOrder = await payOrder({
                 paymentMethod: method,
                 couponCode: coupon?.code || null,
+                amountPaid: paid,
+                change: changeAmount,
             })
 
             // Cập nhật doanh thu ca
             await updateShiftOnOrder({
                 ...paidOrder,
                 total,
+                amountPaid: paid,
+                change: changeAmount,
                 paymentMethod: method,
                 paidAt: serverTimestamp(),
             })

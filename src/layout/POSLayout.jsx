@@ -5,6 +5,7 @@ import { CartProvider } from '../context/CartContext';
 import { TableProvider } from '../context/TableContext';
 import { OrderProvider } from '../context/OrderContext';
 import { ShiftProvider } from '../context/ShiftContext';
+import { Outlet } from 'react-router-dom';
 
 export const POSLayout = () => {
   return (
@@ -15,7 +16,7 @@ export const POSLayout = () => {
             <div className="flex flex-col h-screen bg-gray-50">
               <Header />
               <div className="flex-1 flex overflow-hidden">
-                <POSPage />
+                <Outlet />
               </div>
             </div>
           </CartProvider>

@@ -12,6 +12,8 @@ import { Menu } from './page/admin/Menu';
 import { Order } from './page/admin/Order';
 import { Table } from './page/admin/Table';
 import { AuthProvider } from './context/AuthContext';
+import { POSPage } from './page/pos/POSPage';
+import { POSOrdersPage } from './page/pos/POSOrdersPage';
 
 
 function App() {
@@ -39,7 +41,10 @@ function App() {
             <StaffRoute>
               <POSLayout />
             </StaffRoute>
-          } />
+          }>
+            <Route index element={<POSPage />} />
+            <Route path='orders' element={<POSOrdersPage />} />
+          </Route>
 
           <Route path='/' element={<Navigate to='/login' replace />} />
         </Routes>
