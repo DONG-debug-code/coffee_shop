@@ -52,7 +52,7 @@ export const EditStaff = ({ setStaff, staffEdit, changeEditStatusFalse }) => {
       gender: form.gender,
       phone: form.phone,
       position: form.position,
-      salary: form.salary,
+      salary: Number(form.salary) || 0,
       startDate: form.startDate ? Timestamp.fromDate(new Date(form.startDate)) : null,
     });
 
@@ -178,7 +178,7 @@ export const EditStaff = ({ setStaff, staffEdit, changeEditStatusFalse }) => {
                   name='salary'
                   value={form.salary}
                   onChange={handleChange}
-                  type="text"
+                  type="number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>

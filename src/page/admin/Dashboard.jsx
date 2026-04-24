@@ -69,8 +69,6 @@ export const Dashboard = () => {
         const snap = await getDocs(query(collection(dulieu, 'orders'), where('status', '==', 'paid')))
         const all = snap.docs.map(d => ({ id: d.id, ...d.data() }))
 
-        console.log("Tổng orders paid:", all.length) // ← thêm
-        console.log("Sample order paidAt:", all[0]?.paidAt)
         // Tạo map 30 ngày
         const dayMap = {}
         for (let i = 0; i < 30; i++) {
@@ -90,7 +88,6 @@ export const Dashboard = () => {
             }
         })
 
-        console.log("chartData:", Object.entries(dayMap)) // ← thêm trước setChartData
         setChartData(Object.entries(dayMap).map(([date, revenue]) => ({ date, revenue })))
     }
 
@@ -103,6 +100,7 @@ export const Dashboard = () => {
         acc[m] = (acc[m] || 0) + (o.total || 0)
         return acc
     }, {})
+    
     const productMap = {}
     orders.forEach(o => {
         o.items?.forEach(item => {

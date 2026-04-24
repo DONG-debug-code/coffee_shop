@@ -26,7 +26,7 @@ export const AddStaff = ({ changeEditStatusFalse }) => {
             gender,
             phone,
             position,
-            salary,
+            salary: Number(salary) || 0,
             startDate: startDate ? Timestamp.fromDate(new Date(startDate)) : null
         };
 
@@ -138,8 +138,8 @@ export const AddStaff = ({ changeEditStatusFalse }) => {
                         Lương cơ bản/h
                     </label>
                     <input
-                        type="text"
-                        placeholder="/h"
+                        type="number"
+                        placeholder="VD: 30.000"
                         value={salary}
                         onChange={(e) => setSalary(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus-visible:outline-none focus:ring-2 focus:ring-blue-500"

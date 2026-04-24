@@ -5,24 +5,36 @@ import { dulieu } from '../../data/connectdata'
 import { useRealtimeCollection } from '../../data/useCollection'
 import { SHIFT_CONFIG, DAYS_OF_WEEK } from '../../constants/shifts'
 import * as XLSX from 'xlsx'
+import { Navigation } from '../../components/admin/dashboard/Navigation'
+import { Annotation } from '../../components/admin/dashboard/Annotation'
+import { Cable } from '../../components/admin/dashboard/Cable'
 
 const getWeekDates = (weekStart) => {
     const dates = []
-    const start = new Date(weekStart)
+    const [yyyy, mm, dd] = weekStart.split('-').map(Number)
+    const start = new Date(yyyy, mm - 1, dd) // ← dùng local constructor
     for (let i = 0; i < 7; i++) {
         const d = new Date(start)
         d.setDate(start.getDate() + i)
-        dates.push(d.toISOString().split('T')[0])
+        const y = d.getFullYear()
+        const m = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        dates.push(`${y}-${m}-${day}`)
     }
     return dates
 }
 
 const getMonday = (date) => {
     const d = new Date(date)
-    const day = d.getDay()
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1)
-    d.setDate(diff)
-    return d.toISOString().split('T')[0]
+    d.setHours(0, 0, 0, 0)
+    const day = d.getDay() // 0=CN, 1=T2, ..., 6=T7
+    const diff = day === 0 ? -6 : 1 - day
+    d.setDate(d.getDate() + diff)
+    //Dùng local date thay vì toISOString()
+    const yyyy = d.getFullYear()
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
 }
 
 export const SchedulePage = () => {
@@ -144,98 +156,33 @@ export const SchedulePage = () => {
         <div>
             <h2 className="text-2xl font-medium text-gray-800 mb-6">Bảng ca làm việc</h2>
 
-            {/* Điều hướng tuần */}
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                    <button onClick={prevWeek} className="px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50">←</button>
-                    <span className="font-semibold text-gray-700">
-                        Tuần: {weekStart} → {weekEnd}
-                    </span>
-                    <button onClick={nextWeek} className="px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50">→</button>
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={handleExportExcel}
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600"
-                    >
-                        Xuất Excel
-                    </button>
-                    <button
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 disabled:bg-gray-300"
-                    >
-                        {saving ? "Đang lưu..." : "Lưu bảng ca"}
-                    </button>
-                </div>
-            </div>
+            {/*điều hướng */}
+            <Navigation 
+                schedule={schedule}
+                staffList={staffList}
+                weekStart={weekStart}
+                handleSave={handleSave}
+                handleExportExcel={handleExportExcel}
+                saving={saving}
+                prevWeek={prevWeek}
+                nextWeek={nextWeek}
+                weekEnd={weekEnd}
+            />
 
             {/* Chú thích ca */}
-            <div className="flex gap-3 mb-4">
-                {Object.entries(SHIFT_CONFIG).map(([key, config]) => (
-                    <div key={key} className={`px-3 py-1 rounded-lg border text-xs font-medium ${config.color}`}>
-                        {config.label} ({config.time})
-                    </div>
-                ))}
-            </div>
+            <Annotation 
+                
+            />
 
             {/* Bảng ca */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
-                <table className="w-full text-sm">
-                    <thead className="bg-gray-50 border-b">
-                        <tr>
-                            <th className="text-left px-4 py-3 text-gray-500 font-medium min-w-40">Nhân viên</th>
-                            {weekDates.map((date, i) => (
-                                <th key={date} className="px-3 py-3 text-gray-500 font-medium text-center min-w-32">
-                                    <div>{DAYS_OF_WEEK[i]}</div>
-                                    <div className="text-xs font-normal text-gray-400">{date.slice(5)}</div>
-                                </th>
-                            ))}
-                            <th className="px-4 py-3 text-gray-500 font-medium text-center">Tổng giờ</th>
-                            <th className="px-4 py-3 text-gray-500 font-medium text-right">Tổng lương</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
-                        {staffList.map(staff => (
-                            <tr key={staff.id} className="hover:bg-gray-50">
-                                <td className="px-4 py-3">
-                                    <p className="font-semibold text-gray-800">{staff.fullName}</p>
-                                    <p className="text-xs text-gray-400">{staff.position}</p>
-                                    <p className="text-xs text-gray-400">{(staff.salary || 0).toLocaleString('vi-VN')}đ/h</p>
-                                </td>
-                                {weekDates.map(date => {
-                                    const shifts = schedule[staff.id]?.[date] || []
-                                    return (
-                                        <td key={date} className="px-2 py-2">
-                                            <div className="flex flex-col gap-1">
-                                                {Object.entries(SHIFT_CONFIG).map(([key, config]) => (
-                                                    <button
-                                                        key={key}
-                                                        onClick={() => toggleShift(staff.id, date, key)}
-                                                        className={`px-2 py-1 rounded border text-xs font-medium transition
-                                                            ${shifts.includes(key)
-                                                                ? config.color
-                                                                : 'bg-gray-50 border-gray-200 text-gray-300 hover:border-gray-400'
-                                                            }`}
-                                                    >
-                                                        {config.label}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </td>
-                                    )
-                                })}
-                                <td className="px-4 py-3 text-center font-bold text-blue-600">
-                                    {calcTotalHours(staff.id)}h
-                                </td>
-                                <td className="px-4 py-3 text-right font-bold text-green-600">
-                                    {(calcTotalHours(staff.id) * (staff.salary || 0)).toLocaleString('vi-VN')}đ
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+           <Cable 
+                weekDates={weekDates}
+                staffList={staffList}
+                schedule={schedule}
+                toggleShift={toggleShift}
+                calcTotalHours={calcTotalHours}
+           />
+
         </div>
     )
 }
